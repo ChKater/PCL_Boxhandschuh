@@ -103,7 +103,6 @@ public class ArduinoConnection implements Runnable {
 
 	}
 
-	@Override
 	public void run() {
 		boolean header = false;
 		int prev = 0;
