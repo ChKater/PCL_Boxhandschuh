@@ -97,7 +97,7 @@ MPU6050 mpu;
 // from the FIFO. Note this also requires gravity vector calculations.
 // Also note that yaw/pitch/roll angles suffer from gimbal lock (for
 // more info, see: http://en.wikipedia.org/wiki/Gimbal_lock)
-#define OUTPUT_READABLE_YAWPITCHROLL
+//#define OUTPUT_READABLE_YAWPITCHROLL
 
 
 // uncomment "OUTPUT_READABLE_REALACCEL" if you want to see acceleration
@@ -111,11 +111,14 @@ MPU6050 mpu;
 // components with gravity removed and adjusted for the world frame of
 // reference (yaw is relative to initial orientation, since no magnetometer
 // is present in this case). Could be quite handy in some cases.
-#define OUTPUT_READABLE_WORLDACCEL
+//#define OUTPUT_READABLE_WORLDACCEL
 
 // uncomment "OUTPUT_TEAPOT" if you want output that matches the
 // format used for the InvenSense teapot demo
 //#define OUTPUT_TEAPOT
+
+// FSR Werte Auslese
+#define OUTPUT_FSR
 
 
 
@@ -242,6 +245,10 @@ void setup() {
 // ================================================================
 
 void loop() {
+  float val1 = analogRead(1);
+    float val2 = analogRead(2);
+      float val3 = analogRead(3);
+        float val0 = analogRead(0);
     // if programming failed, don't try to do anything
     if (!dmpReady) return;
 
@@ -321,6 +328,7 @@ void loop() {
             Serial.print("\t");
             Serial.println(ypr[2] * 180/M_PI);
         #endif
+        
 
         #ifdef OUTPUT_READABLE_REALACCEL
             // display real acceleration, adjusted to remove gravity
@@ -351,6 +359,24 @@ void loop() {
             Serial.print("\t");
             Serial.println(aaWorld.z);
         #endif
+        
+        #ifdef OUTPUT_FSR
+        
+          Serial.print("FSR0\t");
+          Serial.print(val0);
+          Serial.print("\n");
+          Serial.print("FSR1\t");
+          Serial.print(val1);
+          Serial.print("\n");
+          Serial.print("FSR2\t");
+          Serial.print(val2);
+          Serial.print("\n");
+          Serial.print("FSR3\t");
+          Serial.print(val3);
+          Serial.print("\n");
+        
+        #endif
+
     
         #ifdef OUTPUT_TEAPOT
             // display quaternion values in InvenSense Teapot demo format:
