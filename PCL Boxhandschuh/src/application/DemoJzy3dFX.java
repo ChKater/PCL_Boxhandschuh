@@ -1,15 +1,19 @@
 package application;
 
-import java.awt.KeyEventDispatcher;
-import java.awt.KeyboardFocusManager;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -52,6 +56,7 @@ public class DemoJzy3dFX extends Application {
 
     ArrayList<Coord3d> coord = new ArrayList<Coord3d>();
     ArrayList<Coord3d> coordAccel = new ArrayList<Coord3d>();
+    private ArrayList<Date> timeStamps = new ArrayList<>();
     private StackPane pane;
     boolean running;
 
@@ -67,11 +72,11 @@ public class DemoJzy3dFX extends Application {
             public void handle(final KeyEvent keyEvent) {
                 if (!running && keyEvent.getEventType() == KeyEvent.KEY_PRESSED) {
                     System.out.println("press");
-
                     coord = new ArrayList<Coord3d>();
                     coordAccel = new ArrayList<Coord3d>();
+                    timeStamps = new ArrayList<>();
                     running = true;
-                } 
+                }
             }
         };
         scene.setOnKeyPressed(keyEventHandler);
@@ -80,14 +85,14 @@ public class DemoJzy3dFX extends Application {
                 if (keyEvent.getEventType() == KeyEvent.KEY_RELEASED) {
                     System.out.println("rel");
                     running = false;
-                    writeToFile();
+                    writeToFile("", "");
                     plott();
-                    
+
                 }
             }
         };
         scene.setOnKeyReleased(keyEventHandlerRel);
-        
+
         // factory1.addSceneSizeChangedListener(chart1, scene);
 
         stage.setWidth(500);
@@ -98,7 +103,7 @@ public class DemoJzy3dFX extends Application {
             @Override
             public void sendData(String inputLine) {
 
-                if(running){
+                if (running) {
                     System.out.println(inputLine);
 
                     if (inputLine.contains("ypr")) {
@@ -106,14 +111,15 @@ public class DemoJzy3dFX extends Application {
                         String[] split = inputLine.split("\\s+");
 
                         Coord3d co = new Coord3d(Float.parseFloat(split[1]), Float.parseFloat(split[2]), Float.parseFloat(split[3]));
-
                         coord.add(co);
 
                         // mpu.gyroReading(Float.parseFloat(split[1]),Float.parseFloat(split[2]),Float.parseFloat(split[3]));
                     } else if (inputLine.contains("aworld")) {
                         String[] split = inputLine.split("\\s+");
                         Coord3d co = new Coord3d(Float.parseFloat(split[1]), Float.parseFloat(split[2]), Float.parseFloat(split[3]));
+                        timeStamps.add(new Date());
                         coordAccel.add(co);
+
                     }
 
                 }
@@ -121,8 +127,8 @@ public class DemoJzy3dFX extends Application {
             }
         };
 
-         ArduinoConnection.getInstance().setMeasure(measureGyro);
-         new Thread(ArduinoConnection.getInstance()).start();
+        ArduinoConnection.getInstance().setMeasure(measureGyro);
+        new Thread(ArduinoConnection.getInstance()).start();
 
     }
 
@@ -156,8 +162,20 @@ public class DemoJzy3dFX extends Application {
         });
     }
 
-    private void writeToFile() {
-        // TODO Auto-generated method stub
+    SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+
+    private void writeToFile(String action, String person) {
+        try {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(new File("data/" + action + "_" + person + "_" + System.currentTimeMillis()), false));
+            bw.write("Position,Time,ACCX,ACCY,ACCZ,GyrY,GyrP,GyrR,Action,Person");
+            for (int i = 0; i < coord.size(); i++) {
+                bw.write(i + "," + sdf.format(timeStamps.get(i)) + "," + coordAccel.get(i).x + "," + coordAccel.get(i).y + "," + coordAccel.get(i).z + "," + coord.get(i).x + "," + coord.get(i).y + "," + coord.get(i).z + "," + action + "," + person);
+            }
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
 
     }
 
