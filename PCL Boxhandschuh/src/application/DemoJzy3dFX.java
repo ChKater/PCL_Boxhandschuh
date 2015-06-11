@@ -85,7 +85,7 @@ public class DemoJzy3dFX extends Application {
                 if (keyEvent.getEventType() == KeyEvent.KEY_RELEASED) {
                     System.out.println("rel");
                     running = false;
-                    writeToFile("", "");
+                    writeToFile("Haken", "Guido");
                     plott();
 
                 }
@@ -104,7 +104,6 @@ public class DemoJzy3dFX extends Application {
             public void sendData(String inputLine) {
 
                 if (running) {
-                    System.out.println(inputLine);
 
                     if (inputLine.contains("ypr")) {
 
@@ -122,6 +121,8 @@ public class DemoJzy3dFX extends Application {
 
                     }
 
+                } else {
+                    System.out.println(inputLine);
                 }
 
             }
@@ -166,10 +167,10 @@ public class DemoJzy3dFX extends Application {
 
     private void writeToFile(String action, String person) {
         try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(new File("data/" + action + "_" + person + "_" + System.currentTimeMillis()), false));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(new File("data/" + action + "_" + person + "_" + sdf.format(new Date())), false));
             bw.write("Position,Time,ACCX,ACCY,ACCZ,GyrY,GyrP,GyrR,Action,Person");
-            for (int i = 0; i < coord.size(); i++) {
-                bw.write(i + "," + sdf.format(timeStamps.get(i)) + "," + coordAccel.get(i).x + "," + coordAccel.get(i).y + "," + coordAccel.get(i).z + "," + coord.get(i).x + "," + coord.get(i).y + "," + coord.get(i).z + "," + action + "," + person);
+            for (int i = 0; i < coord.size() - 3; i++) {
+                bw.write(i + "," + sdf.format(timeStamps.get(i)) + "," + coordAccel.get(i).x + "," + coordAccel.get(i).y + "," + coordAccel.get(i).z + "," + coord.get(i).x + "," + coord.get(i).y + "," + coord.get(i).z + "," + action + "," + person + "\n");
             }
             bw.close();
         } catch (IOException e) {
