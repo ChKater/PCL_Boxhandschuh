@@ -1,8 +1,18 @@
 package application;
+
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
+import java.util.ArrayList;
+
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import org.jzy3d.chart.AWTChart;
@@ -12,26 +22,26 @@ import org.jzy3d.colors.colormaps.ColorMapRainbow;
 import org.jzy3d.javafx.JavaFXChartFactory;
 import org.jzy3d.javafx.JavaFXRenderer3d;
 import org.jzy3d.javafx.controllers.JavaFXCameraMouseController;
+import org.jzy3d.maths.Coord3d;
 import org.jzy3d.maths.Range;
 import org.jzy3d.plot3d.builder.Builder;
 import org.jzy3d.plot3d.builder.Mapper;
+import org.jzy3d.plot3d.primitives.Scatter;
 import org.jzy3d.plot3d.primitives.Shape;
 import org.jzy3d.plot3d.rendering.canvas.Quality;
+
+import arduino.ArduinoConnection;
 
 /**
  * Showing how to pipe an offscreen Jzy3d chart image to a JavaFX ImageView.
  * 
- * {@link JavaFXChartFactory} delivers dedicated  {@link JavaFXCameraMouseController}
- * and {@link JavaFXRenderer3d}
+ * {@link JavaFXChartFactory} delivers dedicated
+ * {@link JavaFXCameraMouseController} and {@link JavaFXRenderer3d}
  * 
- * Support 
- * Rotation control with left mouse button hold+drag
- * Scaling scene using mouse wheel 
- * Animation (camera rotation with thread) 
+ * Support Rotation control with left mouse button hold+drag Scaling scene using
+ * mouse wheel Animation (camera rotation with thread)
  * 
- * TODO : 
- * Mouse right click shift
- * Keyboard support (rotate/shift, etc)
+ * TODO : Mouse right click shift Keyboard support (rotate/shift, etc)
  * 
  * @author Martin Pernollet
  */
@@ -39,33 +49,124 @@ public class DemoJzy3dFX extends Application {
     public static void main(String[] args) {
         Application.launch(args);
     }
-    
+
+    ArrayList<Coord3d> coord = new ArrayList<Coord3d>();
+    ArrayList<Coord3d> coordAccel = new ArrayList<Coord3d>();
+    private StackPane pane;
+    boolean running;
+
     @Override
     public void start(Stage stage) {
         stage.setTitle("Jzy3d|FX");
-        
-        // Jzy3d
-        JavaFXChartFactory factory = new JavaFXChartFactory();
-        AWTChart chart  = getDemoChart(factory, "offscreen");
-        ImageView imageView = factory.bindImageView(chart);
-
-        // JavaFX
-        StackPane pane = new StackPane();
+        pane = new StackPane();
         Scene scene = new Scene(pane);
         stage.setScene(scene);
         stage.show();
-        pane.getChildren().add(imageView);
 
-        factory.addSceneSizeChangedListener(chart, scene);
+        EventHandler<KeyEvent> keyEventHandler = new EventHandler<KeyEvent>() {
+            public void handle(final KeyEvent keyEvent) {
+                if (!running && keyEvent.getEventType() == KeyEvent.KEY_PRESSED) {
+                    System.out.println("press");
+
+                    coord = new ArrayList<Coord3d>();
+                    coordAccel = new ArrayList<Coord3d>();
+                    running = true;
+                } 
+            }
+        };
+        scene.setOnKeyPressed(keyEventHandler);
+        EventHandler<KeyEvent> keyEventHandlerRel = new EventHandler<KeyEvent>() {
+            public void handle(final KeyEvent keyEvent) {
+                if (keyEvent.getEventType() == KeyEvent.KEY_RELEASED) {
+                    System.out.println("rel");
+                    running = false;
+                    writeToFile();
+                    plott();
+                    
+                }
+            }
+        };
+        scene.setOnKeyReleased(keyEventHandlerRel);
         
+        // factory1.addSceneSizeChangedListener(chart1, scene);
+
         stage.setWidth(500);
         stage.setHeight(500);
+
+        Measurements measureGyro = new Measurements() {
+
+            @Override
+            public void sendData(String inputLine) {
+
+                if(running){
+                    System.out.println(inputLine);
+
+                    if (inputLine.contains("ypr")) {
+
+                        String[] split = inputLine.split("\\s+");
+
+                        Coord3d co = new Coord3d(Float.parseFloat(split[1]), Float.parseFloat(split[2]), Float.parseFloat(split[3]));
+
+                        coord.add(co);
+
+                        // mpu.gyroReading(Float.parseFloat(split[1]),Float.parseFloat(split[2]),Float.parseFloat(split[3]));
+                    } else if (inputLine.contains("aworld")) {
+                        String[] split = inputLine.split("\\s+");
+                        Coord3d co = new Coord3d(Float.parseFloat(split[1]), Float.parseFloat(split[2]), Float.parseFloat(split[3]));
+                        coordAccel.add(co);
+                    }
+
+                }
+
+            }
+        };
+
+         ArduinoConnection.getInstance().setMeasure(measureGyro);
+         new Thread(ArduinoConnection.getInstance()).start();
+
     }
 
-    private AWTChart getDemoChart(JavaFXChartFactory factory, String toolkit) {
+    public void plott() {
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                Scatter scatterGyro = new Scatter(coord.toArray(new Coord3d[1]), Color.RED);
+                Scatter satterAccel = new Scatter(coordAccel.toArray(new Coord3d[1]), Color.RED);
+                // Jzy3d
+                JavaFXChartFactory factory1 = new JavaFXChartFactory();
+                AWTChart chart1 = DemoJzy3dFX.this.getDemoChart(factory1, "offscreen", satterAccel);
+                ImageView imageView1 = factory1.bindImageView(chart1);
+
+                JavaFXChartFactory factory2 = new JavaFXChartFactory();
+                AWTChart chart2 = DemoJzy3dFX.this.getDemoChart(factory2, "offscreen", scatterGyro);
+                ImageView imageView2 = factory1.bindImageView(chart2);
+
+                // JavaFX
+
+                VBox v = new VBox();
+                v.getChildren().add(imageView1);
+                v.getChildren().add(imageView2);
+                pane.getChildren().clear();
+                pane.getChildren().add(v);
+
+                ArduinoConnection.getInstance().run = false;
+
+            }
+        });
+    }
+
+    private void writeToFile() {
+        // TODO Auto-generated method stub
+
+    }
+
+    private AWTChart getDemoChart(JavaFXChartFactory factory, String toolkit, Scatter scatter) {
+
         // -------------------------------
         // Define a function to plot
         Mapper mapper = new Mapper() {
+            @Override
             public double f(double x, double y) {
                 return x * Math.sin(x * y);
             }
@@ -84,12 +185,13 @@ public class DemoJzy3dFX extends Application {
         // -------------------------------
         // Create a chart
         Quality quality = Quality.Advanced;
-        //quality.setSmoothPolygon(true);
-        //quality.setAnimated(true);
-        
+        // quality.setSmoothPolygon(true);
+        // quality.setAnimated(true);
+
         // let factory bind mouse and keyboard controllers to JavaFX node
         AWTChart chart = (AWTChart) factory.newChart(quality, toolkit);
-        chart.getScene().getGraph().add(surface);
+        // chart.getScene().add(scatterGyro);
+        chart.getScene().add(scatter);
         return chart;
     }
 }
