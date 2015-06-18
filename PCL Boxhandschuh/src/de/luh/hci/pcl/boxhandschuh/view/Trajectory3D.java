@@ -34,9 +34,9 @@ import de.luh.hci.pcl.boxhandschuh.arduino.FakeArduinoConnection;
 import de.luh.hci.pcl.boxhandschuh.model.MeasurePoint;
 import de.luh.hci.pcl.boxhandschuh.model.MeasurePointListener;
 import de.luh.hci.pcl.boxhandschuh.model.Measurement;
+import de.luh.hci.pcl.boxhandschuh.model.Punch;
 import de.luh.hci.pcl.boxhandschuh.protrector.MeasurementTo3dTrajectory;
 import de.luh.hci.pcl.boxhandschuh.protrector.Point3D;
-import de.luh.hci.pcl.boxhandschuh.protrector.Punch;
 
 public class Trajectory3D extends SplitPane implements MeasurePointListener {
 
@@ -87,14 +87,12 @@ public class Trajectory3D extends SplitPane implements MeasurePointListener {
 	public void measure() {
 
 		if (measurementRunning) {
-			m.setEnd(new Date());
 			punches.add(new Punch(m, mto3dt.measurementTo3DTrajectory(m),
 					classSelect.getSelectionModel().getSelectedItem(), person
 							.getText()));
 			measure.setText("Start");
 		} else {
 			m = new Measurement();
-			m.setStart(new Date());
 			measure.setText("Stop");
 		}
 		measurementRunning = !measurementRunning;

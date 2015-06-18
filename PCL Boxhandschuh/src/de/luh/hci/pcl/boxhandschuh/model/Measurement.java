@@ -14,17 +14,19 @@ public class Measurement {
 	}
 	
 	public Date getStart() {
-		return start;
+		if(measurement.size() == 0){
+			return null;
+		}
+		return measurement.get(0).getDate();
 	}
-	public void setStart(Date start) {
-		this.start = start;
-	}
+	
 	public Date getEnd() {
-		return end;
+		if(measurement.size() == 0){
+			return null;
+		}
+		return measurement.get(measurement.size() - 1).getDate();
 	}
-	public void setEnd(Date end) {
-		this.end = end;
-	}
+	
 	public List<MeasurePoint> getMeasurement() {
 		return measurement;
 	}

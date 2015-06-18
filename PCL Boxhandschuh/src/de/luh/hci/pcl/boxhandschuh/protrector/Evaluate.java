@@ -41,7 +41,6 @@ public class Evaluate {
 						// resample
 						Measurement m = new Measurement();
 						long now = new Date().getTime();
-						m.setStart(new Date(now));
 
 						for (int i = 1; i < lines.size(); i++) {
 							String row = lines.get(i);

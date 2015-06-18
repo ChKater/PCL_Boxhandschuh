@@ -1,9 +1,9 @@
-package de.luh.hci.pcl.boxhandschuh.protrector;
+package de.luh.hci.pcl.boxhandschuh.model;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-import de.luh.hci.pcl.boxhandschuh.model.Measurement;
+import de.luh.hci.pcl.boxhandschuh.protrector.Point3D;
 
 public class Punch {
 
@@ -59,4 +59,5 @@ public class Punch {
 		return className + " (von " + person + ") am " + dt.format(measurement.getStart());
 	}
 
+	 
 }
