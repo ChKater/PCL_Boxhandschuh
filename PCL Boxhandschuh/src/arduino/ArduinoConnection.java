@@ -21,156 +21,156 @@ import application.Measurements;
 
 public class ArduinoConnection implements Runnable {
 
-    private static ArduinoConnection instance;
+	private static ArduinoConnection instance;
 
-    // Constants
+	// Constants
 
-    /** Milliseconds to block while waiting for port open */
-    public static final int TIME_OUT = 2000;
-    /** Default bits per second for COM port. */
-    public static final int DATA_RATE = 115200;
-    /** The port we're normally going to use. */
-    private static final String PORT_NAMES[] = { "/dev/tty.usbserial-A9007UX1", // Mac
-                                                                                // OS
-                                                                                // X
-            "/dev/ttyUSB0", // Linux
-            "/dev/ttyACM0", // Linux
-            "COM4", // Windows
-            "/dev/cu.usbmodem1411" };
+	/** Milliseconds to block while waiting for port open */
+	public static final int TIME_OUT = 2000;
+	/** Default bits per second for COM port. */
+	public static final int DATA_RATE = 115200;
+	/** The port we're normally going to use. */
+	private static final String PORT_NAMES[] = { "/dev/tty.usbserial-A9007UX1", // Mac
+																				// OS
+																				// X
+			"/dev/ttyUSB0", // Linux
+			"/dev/ttyACM0", // Linux
+			"COM4", // Windows
+			"/dev/cu.usbmodem1411" };
 
-    private static final int BYTES_PER_MEASUREMENT = 8;
+	private static final int BYTES_PER_MEASUREMENT = 8;
 
-    private Measurements measure;
-    public static ArduinoConnection getInstance() {
-        initInstance();
-        return instance;
-    }
+	private Measurements measure;
 
-    private static void initInstance() {
-        if (instance == null) {
-            instance = new ArduinoConnection();
-        }
-    }
+	public static ArduinoConnection getInstance() {
+		initInstance();
+		return instance;
+	}
 
-    public static void reset() {
-        if (instance != null) {
-            instance.close();
-            instance = new ArduinoConnection();
-        }
-    }
+	private static void initInstance() {
+		if (instance == null) {
+			instance = new ArduinoConnection();
+		}
+	}
 
-    SerialPort serialPort;
+	public static void reset() {
+		if (instance != null) {
+			instance.close();
+			instance = new ArduinoConnection();
+		}
+	}
 
-    private InputStream input;
+	SerialPort serialPort;
 
-    private ArduinoConnection() {
-        initialize();
-        //new Thread(this, "ArduinoConnection").start();
+	private InputStream input;
 
-    }
-    
+	private ArduinoConnection() {
+		initialize();
+		// new Thread(this, "ArduinoConnection").start();
 
-    /**
-     * This should be called when you stop using the port. This will prevent
-     * port locking on platforms like Linux.
-     */
-    private synchronized void close() {
-        if (serialPort != null) {
-            serialPort.removeEventListener();
-            serialPort.close();
-        }
-    }
+	}
 
-    public void initialize() {
+	/**
+	 * This should be called when you stop using the port. This will prevent
+	 * port locking on platforms like Linux.
+	 */
+	private synchronized void close() {
+		if (serialPort != null) {
+			serialPort.removeEventListener();
+			serialPort.close();
+		}
+	}
 
-        CommPortIdentifier portId = null;
-        @SuppressWarnings("rawtypes")
-        Enumeration portEnum = CommPortIdentifier.getPortIdentifiers();
+	public void initialize() {
 
-        // First, Find an instance of serial port as set in PORT_NAMES.
-        while (portEnum.hasMoreElements()) {
-            CommPortIdentifier currPortId = (CommPortIdentifier) portEnum.nextElement();
-            for (String portName : PORT_NAMES) {
-                if (currPortId.getName().equals(portName)) {
-                    portId = currPortId;
-                    break;
-                }
-            }
-        }
-        if (portId == null) {
-            System.out.println("Could not find COM port.");
-            return;
-        }
+		CommPortIdentifier portId = null;
+		@SuppressWarnings("rawtypes")
+		Enumeration portEnum = CommPortIdentifier.getPortIdentifiers();
 
-        try {
-            serialPort = (SerialPort) portId.open(this.getClass().getName(), TIME_OUT);
+		// First, Find an instance of serial port as set in PORT_NAMES.
+		while (portEnum.hasMoreElements()) {
+			CommPortIdentifier currPortId = (CommPortIdentifier) portEnum
+					.nextElement();
+			for (String portName : PORT_NAMES) {
+				if (currPortId.getName().equals(portName)) {
+					portId = currPortId;
+					break;
+				}
+			}
+		}
+		if (portId == null) {
+			System.out.println("Could not find COM port.");
+			return;
+		}
 
-            serialPort.setSerialPortParams(DATA_RATE, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+		try {
+			serialPort = (SerialPort) portId.open(this.getClass().getName(),
+					TIME_OUT);
 
-            input = serialPort.getInputStream();
+			serialPort.setSerialPortParams(DATA_RATE, SerialPort.DATABITS_8,
+					SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
 
-        } catch (Exception e) {
-            System.err.println(e.toString());
-        }
+			input = serialPort.getInputStream();
 
-    }
-    
-    public boolean run = true;
+		} catch (Exception e) {
+			System.err.println(e.toString());
+		}
 
-    @Override
-    public void run() {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-        boolean header = false;
-        int prev = 0;
-        int current = 0;
-        
-        
-        
-        
-        //Chart chart = new Chart();
-        //chart.getAxeLayout().setMainColor(Color.WHITE);
-        //chart.getView().setBackgroundColor(Color.BLACK);
-        //chart.getScene().add(scatter);
-        //ChartLauncher.openChart(chart);
-        
-        while (true) {
-            try {
+	}
 
-                // if (!header && input.available() > 0
-                // && (current = input.read()) == 255 && prev == 255) {
-                // header = true;
-                // } else if (header && input.available() >=
-                // BYTES_PER_MEASUREMENT) {
-                // prev = 0;
-                // current = 0;
-                //
-                // // 2 Byte number to int
-                // int low = input.read() & 0xff;
-                // int high = (input.read() & 0xff) << 8;
-                // int value = low + high;
-                // }
-                // prev = current;
+	public boolean run = true;
 
-                String inputLine = reader.readLine();
-               measure.sendData(inputLine);
+	@Override
+	public void run() {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+		boolean header = false;
+		int prev = 0;
+		int current = 0;
 
-            } catch (IOException e) {
-                e.printStackTrace();
-                System.exit(1);
-            }
-        }
+		// Chart chart = new Chart();
+		// chart.getAxeLayout().setMainColor(Color.WHITE);
+		// chart.getView().setBackgroundColor(Color.BLACK);
+		// chart.getScene().add(scatter);
+		// ChartLauncher.openChart(chart);
 
-    }
+		while (true) {
+			try {
 
-    public static void main(String[] args) {
-        ArduinoConnection.getInstance();
-    }
+				// if (!header && input.available() > 0
+				// && (current = input.read()) == 255 && prev == 255) {
+				// header = true;
+				// } else if (header && input.available() >=
+				// BYTES_PER_MEASUREMENT) {
+				// prev = 0;
+				// current = 0;
+				//
+				// // 2 Byte number to int
+				// int low = input.read() & 0xff;
+				// int high = (input.read() & 0xff) << 8;
+				// int value = low + high;
+				// }
+				// prev = current;
 
-    public Measurements getMeasure() {
-        return measure;
-    }
+				String inputLine = reader.readLine();
+				System.out.println(inputLine);
 
-    public void setMeasure(Measurements measure) {
-        this.measure = measure;
-    }
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
+		}
+
+	}
+
+	public static void main(String[] args) {
+		ArduinoConnection.getInstance();
+	}
+
+	public Measurements getMeasure() {
+		return measure;
+	}
+
+	public void setMeasure(Measurements measure) {
+		this.measure = measure;
+	}
 }
