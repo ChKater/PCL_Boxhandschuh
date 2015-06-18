@@ -19,26 +19,11 @@ public class SensorMonitor extends GridPane implements MeasurePointListener{
 	private static final double MAX_DATA_POINTS = 150;
 
 	@FXML
-	private LineChart<Number, Number> acc,gyr;
+	private LineChart<Number, Number> acc,gyr, fsr;
 	
 	private int x = 0;
 
-	private NumberAxis xAxis;
-
-	private NumberAxis yAxis;
-	
 	public SensorMonitor(){
-		xAxis = new NumberAxis(0, MAX_DATA_POINTS,
-				MAX_DATA_POINTS / 10);
-		xAxis.setForceZeroInRange(false);
-		xAxis.setAutoRanging(false);
-
-		xAxis.setTickLabelsVisible(false);
-		xAxis.setTickMarkVisible(false);
-		xAxis.setMinorTickVisible(false);
-
-		yAxis = new NumberAxis();
-		yAxis.setAutoRanging(true);
 
 		try {
 			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(
@@ -50,13 +35,18 @@ public class SensorMonitor extends GridPane implements MeasurePointListener{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		acc.getData().add(new XYChart.Series("acc[x]", FXCollections.observableArrayList()));
-		acc.getData().add(new XYChart.Series("acc[Y]", FXCollections.observableArrayList()));
-		acc.getData().add(new XYChart.Series("acc[Z]", FXCollections.observableArrayList()));
+		acc.getData().add(new XYChart.Series<>("acc[x]", FXCollections.observableArrayList()));
+		acc.getData().add(new XYChart.Series<>("acc[Y]", FXCollections.observableArrayList()));
+		acc.getData().add(new XYChart.Series<>("acc[Z]", FXCollections.observableArrayList()));
 		
-		gyr.getData().add(new XYChart.Series("gyr[x]", FXCollections.observableArrayList()));
-		gyr.getData().add(new XYChart.Series("gyr[y]", FXCollections.observableArrayList()));
-		gyr.getData().add(new XYChart.Series("gyr[z]", FXCollections.observableArrayList()));
+		gyr.getData().add(new XYChart.Series<>("gyr[x]", FXCollections.observableArrayList()));
+		gyr.getData().add(new XYChart.Series<>("gyr[y]", FXCollections.observableArrayList()));
+		gyr.getData().add(new XYChart.Series<>("gyr[z]", FXCollections.observableArrayList()));
+		
+		fsr.getData().add(new XYChart.Series<>("fsr0", FXCollections.observableArrayList()));
+		fsr.getData().add(new XYChart.Series<>("fsr1", FXCollections.observableArrayList()));
+		fsr.getData().add(new XYChart.Series<>("fsr2", FXCollections.observableArrayList()));
+		fsr.getData().add(new XYChart.Series<>("fsr3", FXCollections.observableArrayList()));
 		FakeArduinoConnection.addMeasurePointListener(this);
 		
 	}
@@ -67,15 +57,23 @@ public class SensorMonitor extends GridPane implements MeasurePointListener{
 			acc.getData().get(0).getData().add(new XYChart.Data<>(x, measurePoint.getAx()));
 			acc.getData().get(1).getData().add(new XYChart.Data<>(x, measurePoint.getAy()));
 			acc.getData().get(2).getData().add(new XYChart.Data<>(x, measurePoint.getAz()));
+			((NumberAxis) acc.getXAxis()).setLowerBound(x - MAX_DATA_POINTS);
+			((NumberAxis) acc.getXAxis()).setUpperBound(x - 1);
 			
 			gyr.getData().get(0).getData().add(new XYChart.Data<>(x, measurePoint.getGx()));
 			gyr.getData().get(1).getData().add(new XYChart.Data<>(x, measurePoint.getGy()));
 			gyr.getData().get(2).getData().add(new XYChart.Data<>(x, measurePoint.getGz()));
-			((NumberAxis) acc.getXAxis()).setLowerBound(x - MAX_DATA_POINTS);
-			((NumberAxis) acc.getXAxis()).setUpperBound(x - 1);
-		
 			((NumberAxis) gyr.getXAxis()).setLowerBound(x - MAX_DATA_POINTS);
 			((NumberAxis) gyr.getXAxis()).setUpperBound(x - 1);
+			
+			fsr.getData().get(0).getData().add(new XYChart.Data<>(x, measurePoint.getFsr0()));
+			fsr.getData().get(1).getData().add(new XYChart.Data<>(x, measurePoint.getFsr1()));
+			fsr.getData().get(2).getData().add(new XYChart.Data<>(x, measurePoint.getFsr2()));
+			fsr.getData().get(3).getData().add(new XYChart.Data<>(x, measurePoint.getFsr3()));
+			((NumberAxis) fsr.getXAxis()).setLowerBound(x - MAX_DATA_POINTS);
+			((NumberAxis) fsr.getXAxis()).setUpperBound(x - 1);
+			
+		
 		
 			
 			x++;
