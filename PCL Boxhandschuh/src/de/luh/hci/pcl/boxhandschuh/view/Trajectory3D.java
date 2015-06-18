@@ -14,6 +14,8 @@ import org.jzy3d.maths.Coord3d;
 import org.jzy3d.maths.Range;
 import org.jzy3d.plot3d.builder.Builder;
 import org.jzy3d.plot3d.builder.Mapper;
+import org.jzy3d.plot3d.primitives.LineStrip;
+import org.jzy3d.plot3d.primitives.Point;
 import org.jzy3d.plot3d.primitives.Scatter;
 import org.jzy3d.plot3d.primitives.Shape;
 import org.jzy3d.plot3d.rendering.canvas.Quality;
@@ -127,9 +129,11 @@ public class Trajectory3D extends SplitPane implements MeasurePointListener {
 
 	private void plott(Coord3d[] data) {
 		Scatter satterAccel = new Scatter(data, Color.RED);
+		
 		JavaFXChartFactory factory1 = new JavaFXChartFactory();
 		AWTChart chart1 = getDemoChart(factory1, "offscreen", satterAccel);
 		ImageView imageView1 = factory1.bindImageView(chart1);
+//		imageView1.fitWidthProperty().bind(chartPane.widthProperty()); 
 		chartPane.getChildren().clear();
 		chartPane.add(imageView1, 0, 0);
 	}
@@ -166,17 +170,36 @@ public class Trajectory3D extends SplitPane implements MeasurePointListener {
 				new Color(1, 1, 1, .5f)));
 		surface.setFaceDisplayed(true);
 		surface.setWireframeDisplayed(false);
+		surface.setColor(Color.GREEN);
 
 		// -------------------------------
 		// Create a chart
 		Quality quality = Quality.Advanced;
-		// quality.setSmoothPolygon(true);
-		// quality.setAnimated(true);
+		 quality.setSmoothPolygon(true);
+		 quality.setAnimated(true);
 
 		// let factory bind mouse and keyboard controllers to JavaFX node
 		AWTChart chart = (AWTChart) factory.newChart(quality, toolkit);
+//		factory.addSceneSizeChangedListener(chart, chartPane.getScene());
 		// chart.getScene().add(scatterGyro);
 		chart.getScene().add(scatter);
+		LineStrip sls = new LineStrip();
+		
+		sls.add(new Point(scatter.getData()[0], Color.GREEN));
+		sls.add(new Point(scatter.getData()[1], Color.GREEN));
+		sls.setDisplayed(true);
+		chart.getScene().getGraph().add(sls);
+		Coord3d prev = scatter.getData()[1];
+		for (int i = 2; i < scatter.getData().length; i++) {
+			Coord3d cur = scatter.getData()[i];
+			LineStrip ls = new LineStrip();
+			
+			ls.add(new Point(prev, Color.RED));
+			ls.add(new Point(cur, Color.RED));
+			ls.setDisplayed(true);
+			prev = cur;
+			chart.getScene().getGraph().add(ls);
+		}
 		return chart;
 	}
 }
