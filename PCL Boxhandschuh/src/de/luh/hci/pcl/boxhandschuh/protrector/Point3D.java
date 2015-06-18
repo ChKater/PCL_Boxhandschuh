@@ -11,5 +11,7 @@ public class Point3D {
 		this.z = z;
 	}
 	
-	
+	public Point3D copy(){
+		return new Point3D(x, y, z);
+	}
 }

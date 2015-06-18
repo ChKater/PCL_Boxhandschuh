@@ -6,15 +6,15 @@ import java.util.List;
 public class Template {
 
 	private List<Point3D> trace;
-	private int id;
+	private String id;
 
-	public Template(List<Point3D> trace, int id) {
+	public Template(List<Point3D> trace, String id) {
 		super();
 		this.trace = trace;
 		this.id = id;
 	}
 
-	public Template(int id) {
+	public Template(String id) {
 		super();
 		this.trace = new ArrayList<>();
 		this.id = id;
@@ -28,12 +28,17 @@ public class Template {
 		this.trace = trace;
 	}
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
+	}
+	
+	@Override
+	public String toString() {
+		return "[" + id + "]:";
 	}
 
 }

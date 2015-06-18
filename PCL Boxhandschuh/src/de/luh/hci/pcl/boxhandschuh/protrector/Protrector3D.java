@@ -14,6 +14,7 @@ import org.apache.commons.math3.linear.RealVector;
 public class Protrector3D {
 
 	public static final int N = 32;
+	public static final double S = 100;
 
 	private static Function<Point3D, Double> x = p -> {
 		return p.x;
@@ -25,16 +26,18 @@ public class Protrector3D {
 		return p.z;
 	};
 
-	public Match recognize(List<Point3D> trace, List<Template> templates) {
+	List<Template> templates = new ArrayList<>();
+
+	public Match recognize(List<Point3D> trace) {
 		List<Point3D> resampledTrace = resample(trace);
 		Point3D c = centroid(resampledTrace);
 		c.x = -c.x;
 		c.y = -c.y;
 		c.z = -c.z;
 		translate(resampledTrace, c); // translate to origin
-		normalize(resampledTrace); // not strictly necessary, will be normalized
+//		normalize(resampledTrace); // not strictly necessary, will be normalized
 									// after rotation anyway
-
+		fitToBox(resampledTrace);
 		Match bestMatch = null;
 		for (Template t : templates) {
 			Match m = optimalAngle(resampledTrace, t.getTrace());
@@ -47,17 +50,49 @@ public class Protrector3D {
 		return bestMatch;
 	}
 
+	public void addTemplate(String id, List<Point3D> trace) {
+		List<Point3D> resampledTrace = resample(trace);
+		Point3D c = centroid(resampledTrace);
+		c.x = -c.x;
+		c.y = -c.y;
+		c.z = -c.z;
+		translate(resampledTrace, c); // translate to origin
+//		normalize(resampledTrace);
+		fitToBox(resampledTrace);
+
+		templates.add(new Template(trace, id));
+	}
+
 	public double pathLength(List<Point3D> trace) {
 		double length = 0;
-
-		Iterator<Point3D> iterator = trace.iterator();
-		Point3D lastTracePoint = iterator.next();
-		while (iterator.hasNext()) {
-			Point3D tracePoint = iterator.next();
-			length += distance(lastTracePoint, tracePoint);
+		Point3D lastTracePoint = trace.get(0);
+		for (int i = 0; i < trace.size(); i++) {
+			Point3D tracePoint = trace.get(i);
+			double distance = distance(lastTracePoint, tracePoint);
+			length += distance;
 			lastTracePoint = tracePoint;
 		}
 		return length;
+	}
+
+	public void fitToBox(List<Point3D> trace) {
+		double max = Double.MIN_VALUE;
+		for (Point3D p : trace) {
+			double absX = Math.abs(p.x);
+			if (absX > max) {
+				max = absX;
+			}
+			double absY = Math.abs(p.y);
+			if (absY > max) {
+				max = absY;
+			}
+			double absZ = Math.abs(p.z);
+			if (absZ > max) {
+				max = absZ;
+			}
+		}
+		double factor = (S / 2.0) / max;
+		scale(trace, factor);
 	}
 
 	public void translate(List<Point3D> points, Point3D translationVector) {
@@ -134,13 +169,15 @@ public class Protrector3D {
 		if (m == 1) {
 			Point3D p = trace.get(0);
 			for (int i = 0; i < N;) {
-				newTrace.add(p);
+				newTrace.add(p.copy());
 			}
 			return newTrace;
 		}
 
 		// at least 2 points in trace
-		double I = pathLength(trace) / (N - 1);
+
+		double pathLength = pathLength(trace);
+		double I = pathLength / (N - 1);
 		double D = 0;
 		Point3D pp = trace.get(0);
 		newTrace.add(pp); // add first point of original
@@ -169,12 +206,12 @@ public class Protrector3D {
 		double score = 0;
 		for (int i = 0; i < g.size(); i++) {
 			Point3D gp = g.get(i);
-			RealMatrix gv = MatrixUtils.createRealMatrix(new double[][] { {
-					gp.x, gp.y, gp.z } });
+			RealMatrix gv = MatrixUtils.createRealMatrix(new double[][] {
+					{ gp.x }, { gp.y }, { gp.z } });
 			Point3D tp = t.get(i);
 			RealVector tv = new ArrayRealVector(
 					new Double[] { tp.x, tp.y, tp.z });
-			score += r.multiply(gv).getRowVector(0).dotProduct(tv);
+			score += r.multiply(gv).getColumnVector(0).dotProduct(tv);
 		}
 		return new Match(score, r);
 	}

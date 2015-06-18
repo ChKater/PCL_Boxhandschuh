@@ -5,7 +5,7 @@ import java.util.Date;
 public class MeasurePoint {
 
 	private Date date;
-	private int gx, gy, gz, ax, ay, az;
+	private double gx, gy, gz, ax, ay, az;
 
 	public Date getDate() {
 		return date;
@@ -15,8 +15,8 @@ public class MeasurePoint {
 		super();
 	}
 
-	public MeasurePoint(Date date, int gx, int gy, int gz, int ax, int ay,
-			int az) {
+	public MeasurePoint(Date date, double gx, double gy, double gz, double ax, double ay,
+			double az) {
 		super();
 		this.date = date;
 		this.gx = gx;
@@ -27,56 +27,61 @@ public class MeasurePoint {
 		this.az = az;
 	}
 
+	public double getGx() {
+		return gx;
+	}
+
+	public void setGx(double gx) {
+		this.gx = gx;
+	}
+
+	public double getGy() {
+		return gy;
+	}
+
+	public void setGy(double gy) {
+		this.gy = gy;
+	}
+
+	public double getGz() {
+		return gz;
+	}
+
+	public void setGz(double gz) {
+		this.gz = gz;
+	}
+
+	public double getAx() {
+		return ax;
+	}
+
+	public void setAx(double ax) {
+		this.ax = ax;
+	}
+
+	public double getAy() {
+		return ay;
+	}
+
+	public void setAy(double ay) {
+		this.ay = ay;
+	}
+
+	public double getAz() {
+		return az;
+	}
+
+	public void setAz(double az) {
+		this.az = az;
+	}
+
 	public void setDate(Date date) {
 		this.date = date;
 	}
 
-	public int getGx() {
-		return gx;
-	}
-
-	public void setGx(int gx) {
-		this.gx = gx;
-	}
-
-	public int getGy() {
-		return gy;
-	}
-
-	public void setGy(int gy) {
-		this.gy = gy;
-	}
-
-	public int getGz() {
-		return gz;
-	}
-
-	public void setGz(int gz) {
-		this.gz = gz;
-	}
-
-	public int getAx() {
-		return ax;
-	}
-
-	public void setAx(int ax) {
-		this.ax = ax;
-	}
-
-	public int getAy() {
-		return ay;
-	}
-
-	public void setAy(int ay) {
-		this.ay = ay;
-	}
-
-	public int getAz() {
-		return az;
-	}
-
-	public void setAz(int az) {
-		this.az = az;
+	@Override
+	public String toString() {
+		return "[time=" +  date.getTime()+ "]" + "acc[x=" + ax + ", y=" + ay+ "z=" + az + "]";
 	}
 
 }
