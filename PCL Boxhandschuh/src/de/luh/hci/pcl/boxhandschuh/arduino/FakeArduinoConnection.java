@@ -28,8 +28,6 @@ public class FakeArduinoConnection {
 
 	public static void removeMeasurePointListener(MeasurePointListener listener) {
 		measurePointListener.remove(listener);
-		
-
 	}
 
 	public static void start() {

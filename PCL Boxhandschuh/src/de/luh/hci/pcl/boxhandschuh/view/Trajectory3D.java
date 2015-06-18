@@ -1,5 +1,6 @@
 package de.luh.hci.pcl.boxhandschuh.view;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -31,6 +32,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import de.luh.hci.pcl.boxhandschuh.arduino.FakeArduinoConnection;
+import de.luh.hci.pcl.boxhandschuh.io.PunchIO;
 import de.luh.hci.pcl.boxhandschuh.model.MeasurePoint;
 import de.luh.hci.pcl.boxhandschuh.model.MeasurePointListener;
 import de.luh.hci.pcl.boxhandschuh.model.Measurement;
@@ -62,6 +64,8 @@ public class Trajectory3D extends SplitPane implements MeasurePointListener {
 	private ObservableList<Punch> punches = FXCollections.observableArrayList();
 	private MeasurementTo3dTrajectory mto3dt = new MeasurementTo3dTrajectory();
 
+	private File dataDir = new File("punch-data");
+	
 	public Trajectory3D() {
 		try {
 			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(
@@ -75,21 +79,35 @@ public class Trajectory3D extends SplitPane implements MeasurePointListener {
 		}
 
 		measurements.setItems(punches);
-		measurements.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->{
-			plott(transform(newValue.getTrace()));
-		});
-		
+		measurements.getSelectionModel().selectedItemProperty()
+				.addListener((observable, oldValue, newValue) -> {
+					plott(transform(newValue.getTrace()));
+				});
+		readData();
 		FakeArduinoConnection.addMeasurePointListener(this);
 
 	}
+
+	private void readData() {
+		
+		for (File file : dataDir.listFiles()) {
+			if (file.isFile() && !file.getName().startsWith(".")) {
+				punches.add(PunchIO.readPunch(file));
+			}
+		}
+	}
+	
+	
 
 	@FXML
 	public void measure() {
 
 		if (measurementRunning) {
-			punches.add(new Punch(m, mto3dt.measurementTo3DTrajectory(m),
+			Punch punch = new Punch(m, mto3dt.measurementTo3DTrajectory(m),
 					classSelect.getSelectionModel().getSelectedItem(), person
-							.getText()));
+							.getText());
+			PunchIO.savePunch(punch);
+			punches.add(punch);
 			measure.setText("Start");
 		} else {
 			m = new Measurement();

@@ -48,14 +48,18 @@ public class PunchIO {
 			String line = null;
 			while((line = br.readLine()) != null){
 				String[] values = line.split(",");
-				MeasurePoint p = new MeasurePoint(sdf.parse(values[1]),
-						Double.parseDouble(values[5]),
-						Double.parseDouble(values[6]),
-						Double.parseDouble(values[7]),
-						Double.parseDouble(values[2]),
-						Double.parseDouble(values[3]),
-						Double.parseDouble(values[4]));
-				m.getMeasurement().add(p);
+				if(values[0].equals("Position")){
+					MeasurePoint p = new MeasurePoint(sdf.parse(values[1]),
+							Double.parseDouble(values[5]),
+							Double.parseDouble(values[6]),
+							Double.parseDouble(values[7]),
+							Double.parseDouble(values[2]),
+							Double.parseDouble(values[3]),
+							Double.parseDouble(values[4]));
+					m.getMeasurement().add(p);
+					person = values[9];
+					className = values[8];
+				}
 			}
 			br.close();
 		} catch (FileNotFoundException e) {
@@ -77,9 +81,9 @@ public class PunchIO {
 	public static void savePunch(Punch punch) {
 		savePunch(
 				punch,
-				new File("data/" + punch.getClassName() + "_"
+				new File("punch-data/" + punch.getClassName() + "_"
 						+ punch.getPerson() + "_"
-						+ sdf.format(punch.getMeasurement().getStart())));
+						+ sdf.format(punch.getMeasurement().getStart()) + ".csv"));
 
 	}
 }
