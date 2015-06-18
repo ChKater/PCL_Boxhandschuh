@@ -34,6 +34,7 @@ public class ArduinoConnection implements Runnable {
                                                                                 // OS
                                                                                 // X
             "/dev/ttyUSB0", // Linux
+            "/dev/ttyACM0", // Linux
             "COM4", // Windows
             "/dev/cu.usbmodem1411" };
 
