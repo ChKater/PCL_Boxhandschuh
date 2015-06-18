@@ -28,8 +28,6 @@ public class FakeArduinoConnection {
 
 	public static void removeMeasurePointListener(MeasurePointListener listener) {
 		measurePointListener.remove(listener);
-		
-
 	}
 
 	public static void start() {
@@ -37,7 +35,7 @@ public class FakeArduinoConnection {
 			Random rnd = new Random();
 
 			while(true){
-				MeasurePoint m = new MeasurePoint(new Date(), rnd.nextInt(512), rnd.nextInt(512), rnd.nextInt(512), rnd.nextInt(512),rnd.nextInt(512),rnd.nextInt(512));
+				MeasurePoint m = new MeasurePoint(new Date(), rnd.nextInt(512), rnd.nextInt(512), rnd.nextInt(512), rnd.nextInt(512),rnd.nextInt(512),rnd.nextInt(512), rnd.nextInt(512),rnd.nextInt(512),rnd.nextInt(512),rnd.nextInt(512));
 				for (MeasurePointListener listener : measurePointListener) {
 					listener.OnMeasurePoint(m);
 				}

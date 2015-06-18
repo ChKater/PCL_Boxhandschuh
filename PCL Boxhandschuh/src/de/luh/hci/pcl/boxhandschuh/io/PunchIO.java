@@ -17,20 +17,22 @@ import de.luh.hci.pcl.boxhandschuh.protrector.MeasurementTo3dTrajectory;
 
 public class PunchIO {
 	private static final SimpleDateFormat sdf = new SimpleDateFormat(
-			"dd.MM.yyyy HH:mm:ss:SSS");
-	
+			"dd.MM.yyyy HH:mm:ss:S");
+
 	private static MeasurementTo3dTrajectory mt3dt = new MeasurementTo3dTrajectory();
 
 	public static void savePunch(Punch punch, File file) {
 		try {
 			BufferedWriter bw = new BufferedWriter(new FileWriter(file, false));
-			bw.write("Position,Time,ACCX,ACCY,ACCZ,GyrY,GyrP,GyrR,Class,Person\n");
+			bw.write("Position,Time,ACCX,ACCY,ACCZ,GyrY,GyrP,GyrR,Fsr0,Fsr1,Fsr2,Fsr3,Class,Person\n");
 			for (int i = 0; i < punch.getMeasurement().getMeasurement().size(); i++) {
 				MeasurePoint p = punch.getMeasurement().getMeasurement().get(i);
 				bw.write(i + "," + sdf.format(p.getDate()) + "," + p.getAx()
 						+ "," + p.getAy() + "," + p.getAz() + "," + p.getGx()
-						+ "," + p.getGy() + "," + p.getGz() + ","
-						+ punch.getClassName() + "," + punch.getPerson() + "\n");
+						+ "," + p.getGy() + "," + p.getGz() + "," + p.getFsr0()
+						+ "," + p.getFsr1() + "," + p.getFsr2() + ","
+						+ p.getFsr3() + "," + punch.getClassName() + ","
+						+ punch.getPerson() + "\n");
 			}
 			bw.close();
 		} catch (IOException e) {
@@ -46,16 +48,24 @@ public class PunchIO {
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(file));
 			String line = null;
-			while((line = br.readLine()) != null){
+			while ((line = br.readLine()) != null) {
 				String[] values = line.split(",");
-				MeasurePoint p = new MeasurePoint(sdf.parse(values[1]),
-						Double.parseDouble(values[5]),
-						Double.parseDouble(values[6]),
-						Double.parseDouble(values[7]),
-						Double.parseDouble(values[2]),
-						Double.parseDouble(values[3]),
-						Double.parseDouble(values[4]));
-				m.getMeasurement().add(p);
+				if (!values[0].equals("Position")) {
+					MeasurePoint p = new MeasurePoint(sdf.parse(values[1]),
+							Double.parseDouble(values[5]),
+							Double.parseDouble(values[6]),
+							Double.parseDouble(values[7]),
+							Double.parseDouble(values[2]),
+							Double.parseDouble(values[3]),
+							Double.parseDouble(values[4]),
+							Double.parseDouble(values[8]),
+							Double.parseDouble(values[9]),
+							Double.parseDouble(values[10]),
+							Double.parseDouble(values[11]));
+					m.getMeasurement().add(p);
+					person = values[12];
+					className = values[13];
+				}
 			}
 			br.close();
 		} catch (FileNotFoundException e) {
@@ -71,15 +81,17 @@ public class PunchIO {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return new Punch(m, mt3dt.measurementTo3DTrajectory(m), className, person);
+		return new Punch(m, mt3dt.measurementTo3DTrajectory(m), className,
+				person);
 	}
 
 	public static void savePunch(Punch punch) {
 		savePunch(
 				punch,
-				new File("data/" + punch.getClassName() + "_"
+				new File("punch-data/" + punch.getClassName() + "_"
 						+ punch.getPerson() + "_"
-						+ sdf.format(punch.getMeasurement().getStart())));
+						+ sdf.format(punch.getMeasurement().getStart())
+						+ ".csv"));
 
 	}
 }
