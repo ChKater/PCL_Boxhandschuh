@@ -1,4 +1,5 @@
-Position,Time,ACCX,ACCY,ACCZ,GyrY,GyrP,GyrR,Action,Person0,11.06.2015 17:19:51,1003.0,54.0,43.0,-35.33,29.9,55.91,Upper Cut,Guido
+Position,Time,ACCX,ACCY,ACCZ,GyrY,GyrP,GyrR,Action,Person
+0,11.06.2015 17:19:51,1003.0,54.0,43.0,-35.33,29.9,55.91,Upper Cut,Guido
 1,11.06.2015 17:19:51,1016.0,94.0,50.0,-35.31,29.86,55.94,Upper Cut,Guido
 2,11.06.2015 17:19:51,1019.0,146.0,44.0,-35.32,29.86,55.92,Upper Cut,Guido
 3,11.06.2015 17:19:51,992.0,188.0,-25.0,-35.34,29.84,55.9,Upper Cut,Guido

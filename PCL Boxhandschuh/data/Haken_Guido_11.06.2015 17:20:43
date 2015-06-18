@@ -1,4 +1,5 @@
-Position,Time,ACCX,ACCY,ACCZ,GyrY,GyrP,GyrR,Action,Person0,11.06.2015 17:20:42,1124.0,-1108.0,-64.0,-8.35,7.73,82.0,Haken,Guido
+Position,Time,ACCX,ACCY,ACCZ,GyrY,GyrP,GyrR,Action,Person
+0,11.06.2015 17:20:42,1124.0,-1108.0,-64.0,-8.35,7.73,82.0,Haken,Guido
 1,11.06.2015 17:20:42,1084.0,-1041.0,-125.0,-8.37,7.74,81.98,Haken,Guido
 2,11.06.2015 17:20:42,1062.0,-991.0,-193.0,-8.37,7.72,81.97,Haken,Guido
 3,11.06.2015 17:20:42,1034.0,-938.0,-202.0,-8.39,7.73,81.96,Haken,Guido
