@@ -1,15 +1,14 @@
 package de.luh.hci.pcl.boxhandschuh.main;
 
-import de.luh.hci.pcl.boxhandschuh.arduino.FakeArduinoConnection;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.chart.NumberAxis;
 import javafx.stage.Stage;
+import de.luh.hci.pcl.boxhandschuh.arduino.FakeArduinoConnection;
 
 public class Main extends Application {
-	private static final double MAX_DATA_POINTS = 150;
+
 
 	@Override
 	public void start(Stage primaryStage) {

@@ -64,7 +64,6 @@ public class SensorMonitor extends GridPane implements MeasurePointListener{
 	@Override
 	public void OnMeasurePoint(MeasurePoint measurePoint) {
 		Platform.runLater(()->{
-			System.out.println(x);
 			acc.getData().get(0).getData().add(new XYChart.Data<>(x, measurePoint.getAx()));
 			acc.getData().get(1).getData().add(new XYChart.Data<>(x, measurePoint.getAy()));
 			acc.getData().get(2).getData().add(new XYChart.Data<>(x, measurePoint.getAz()));
