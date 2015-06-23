@@ -50,7 +50,7 @@ public class Protractor3D {
 		c.y = -c.y;
 		c.z = -c.z;
 		translate(resampledTrace, c); // translate to origin
-		normalize(resampledTrace);
+//		normalize(resampledTrace);
 		fitToBox(resampledTrace);
 		return resampledTrace;
 	}
@@ -142,12 +142,12 @@ public class Protractor3D {
 		}
 		eigenvector = eigenvector.mapMultiply(norm);
 		double[] eigenvectorVal = eigenvector.toArray();
-		double theta = 2.0 / Math.cos(eigenvectorVal[0] * 180 / Math.PI);
-		double s = Math.sin(-theta* 180 / Math.PI);
-		double c = Math.cos(-theta* 180 / Math.PI);
-		double qx = eigenvectorVal[1];
-		double qy = eigenvectorVal[2];
-		double qz = eigenvectorVal[3];
+		double theta = 2.0 / Math.cos(eigenvectorVal[3] * 180.0 / Math.PI);
+		double s = Math.sin(-theta);
+		double c = Math.cos(-theta);
+		double qx = eigenvectorVal[2];
+		double qy = eigenvectorVal[1];
+		double qz = eigenvectorVal[0];
 		double qxqx = qx * qx;
 		double qyqy = qy * qy;
 		double qzqz = qz * qz;

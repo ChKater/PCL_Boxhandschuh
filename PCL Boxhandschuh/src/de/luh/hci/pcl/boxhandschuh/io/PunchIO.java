@@ -63,8 +63,8 @@ public class PunchIO {
 							Double.parseDouble(values[10]),
 							Double.parseDouble(values[11]));
 					m.getMeasurement().add(p);
-					person = values[12];
-					className = values[13];
+					person = values[13];
+					className = values[12];
 				}
 			}
 			br.close();

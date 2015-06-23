@@ -74,8 +74,10 @@ public class MeasurementView extends TabPane{
 			rotatedTrace.add(new Point3D(col.getEntry(0), col.getEntry(1), col.getEntry(2)));
 		}
 		protractor3dPlot = new Plott3D(prepared);
+		protractor3dPlot.addPlott(protractor.templates.get(0).getTrace(), Color.YELLOW);
+		protractor3dPlot.addPlott(protractor.templates.get(1).getTrace(), Color.CYAN);
 		protractor3dPlot.addPlott(m.template.getTrace(), Color.BLUE);
-		
+
 		protractor3d.setContent(protractor3dPlot);
 
 	}
