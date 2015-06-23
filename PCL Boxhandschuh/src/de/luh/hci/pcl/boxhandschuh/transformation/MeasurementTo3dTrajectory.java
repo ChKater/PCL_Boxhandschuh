@@ -6,7 +6,7 @@ import java.util.List;
 
 import de.luh.hci.pcl.boxhandschuh.model.MeasurePoint;
 import de.luh.hci.pcl.boxhandschuh.model.Measurement;
-import de.luh.hci.pcl.boxhandschuh.protrector.Point3D;
+import de.luh.hci.pcl.boxhandschuh.protractor.Point3D;
 
 public class MeasurementTo3dTrajectory implements MeasurementToTrace{
 

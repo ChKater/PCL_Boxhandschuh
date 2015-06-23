@@ -3,7 +3,7 @@ package de.luh.hci.pcl.boxhandschuh.model;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-import de.luh.hci.pcl.boxhandschuh.protrector.Point3D;
+import de.luh.hci.pcl.boxhandschuh.protractor.Point3D;
 
 public class Punch {
 

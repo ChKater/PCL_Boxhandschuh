@@ -1,4 +1,4 @@
-package de.luh.hci.pcl.boxhandschuh.protrector;
+package de.luh.hci.pcl.boxhandschuh.protractor;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package de.luh.hci.pcl.boxhandschuh.protrector;
+package de.luh.hci.pcl.boxhandschuh.protractor;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -63,7 +63,7 @@ public class Evaluate {
 					br.close();
 				}
 			}
-			Protrector3D p3D = new Protrector3D();
+			Protractor3D p3D = Protractor3D.getInstance();
 			Random rnd = new Random();
 			//train
 			for (String prefix : dataSets.keySet()) {

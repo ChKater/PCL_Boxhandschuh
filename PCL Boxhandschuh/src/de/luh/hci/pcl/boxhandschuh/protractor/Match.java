@@ -1,6 +1,8 @@
-package de.luh.hci.pcl.boxhandschuh.protrector;
+package de.luh.hci.pcl.boxhandschuh.protractor;
 
 import org.apache.commons.math3.linear.RealMatrix;
+
+
 
 public class Match {
 	public double score;

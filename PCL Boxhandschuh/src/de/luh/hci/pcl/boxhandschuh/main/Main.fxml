@@ -5,9 +5,10 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<TabPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.luh.hci.pcl.boxhandschuh.main.MainController">
+<TabPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.luh.hci.pcl.boxhandschuh.main.MainController">
   <tabs>
-    <Tab fx:id="trajectory3D" text="Trajectory 3D" />
+    <Tab fx:id="measurements" text="Messdaten" />
+      <Tab fx:id="protractor3d" text="Protractor3D" />
     <Tab fx:id="sensorMonitor" text="Sensor Monitor" />
   </tabs>
 </TabPane>

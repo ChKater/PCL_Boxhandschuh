@@ -21,6 +21,7 @@ import de.luh.hci.pcl.boxhandschuh.model.MeasurePoint;
 import de.luh.hci.pcl.boxhandschuh.model.MeasurePointListener;
 import de.luh.hci.pcl.boxhandschuh.model.Measurement;
 import de.luh.hci.pcl.boxhandschuh.model.Punch;
+import de.luh.hci.pcl.boxhandschuh.protractor.Protractor3D;
 import de.luh.hci.pcl.boxhandschuh.transformation.MeasurementTo3dTrajectory;
 
 public class Measurements extends SplitPane implements MeasurePointListener {
@@ -44,13 +45,13 @@ public class Measurements extends SplitPane implements MeasurePointListener {
 	
 	private Measurement m;
 	
-	private Map<Punch, PunchView> punchViews = new HashMap<>();
+	private Map<Punch, MeasurementView> punchViews = new HashMap<>();
 
 	private ObservableList<Punch> punches = FXCollections.observableArrayList();
 	private MeasurementTo3dTrajectory mto3dt = new MeasurementTo3dTrajectory();
 
 	private File dataDir = new File("punch-data");
-
+	private Protractor3D protractor = Protractor3D.getInstance();
 	
 	public Measurements() {
 		try {
@@ -67,9 +68,9 @@ public class Measurements extends SplitPane implements MeasurePointListener {
 		measurements.setItems(punches);
 		measurements.getSelectionModel().selectedItemProperty()
 				.addListener((observable, oldValue, newValue) -> {
-					PunchView punchview = punchViews.get(newValue);
+					MeasurementView punchview = punchViews.get(newValue);
 					if(punchview == null){
-						punchview = new PunchView(newValue);
+						punchview = new MeasurementView(newValue);
 						punchViews.put(newValue, punchview);
 					}
 					chartPane.getChildren().clear();
@@ -84,7 +85,9 @@ public class Measurements extends SplitPane implements MeasurePointListener {
 		
 		for (File file : dataDir.listFiles()) {
 			if (file.isFile() && !file.getName().startsWith(".")) {
-				punches.add(PunchIO.readPunch(file));
+				Punch punch = PunchIO.readPunch(file);
+				protractor.addTemplate(punch.getClassName(), punch.getTrace());
+				punches.add(punch);
 			}
 		}
 	}

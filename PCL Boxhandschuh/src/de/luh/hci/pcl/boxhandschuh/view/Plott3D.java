@@ -14,13 +14,12 @@ import org.jzy3d.plot3d.primitives.Point;
 import org.jzy3d.plot3d.primitives.Scatter;
 import org.jzy3d.plot3d.rendering.canvas.Quality;
 
-import de.luh.hci.pcl.boxhandschuh.protrector.Point3D;
+import de.luh.hci.pcl.boxhandschuh.protractor.Point3D;
 
 public class Plott3D extends GridPane {
 
 	private AWTChart chart;
 	private JavaFXChartFactory factory;
-	private Scatter scatter;
 
 	public Plott3D(List<Point3D> trace) {
 		setPrefHeight(Double.MAX_VALUE);
@@ -28,14 +27,19 @@ public class Plott3D extends GridPane {
 		factory = new JavaFXChartFactory();
 		chart = (AWTChart) factory.newChart(Quality.Fastest, "offscreen");
 
-		plott(transform(trace));
+		plott(transform(trace), Color.RED);
 		
 	}
 	
+	public void addPlott(List<Point3D> trace, Color color){
+		plott(transform(trace), color);
+	}
+	
+	
 	
 
-	private void plott(Coord3d[] data) {
-		scatter = new Scatter(data, Color.RED);
+	private void plott(Coord3d[] data, Color color) {
+		Scatter scatter = new Scatter(data, color);
 		chart.getScene().add(scatter);
 		LineStrip sls = new LineStrip();
 		sls.add(new Point(scatter.getData()[0], Color.GREEN));
@@ -47,8 +51,8 @@ public class Plott3D extends GridPane {
 			Coord3d cur = scatter.getData()[i];
 			LineStrip ls = new LineStrip();
 
-			ls.add(new Point(prev, Color.RED));
-			ls.add(new Point(cur, Color.RED));
+			ls.add(new Point(prev, color));
+			ls.add(new Point(cur, color));
 			ls.setDisplayed(true);
 			prev = cur;
 			chart.getScene().getGraph().add(ls);
