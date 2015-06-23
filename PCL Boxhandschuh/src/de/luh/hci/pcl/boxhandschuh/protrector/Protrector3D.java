@@ -35,9 +35,9 @@ public class Protrector3D {
 		c.y = -c.y;
 		c.z = -c.z;
 		translate(resampledTrace, c); // translate to origin
-//		normalize(resampledTrace); // not strictly necessary, will be normalized
+		normalize(resampledTrace); // not strictly necessary, will be normalized
 									// after rotation anyway
-		fitToBox(resampledTrace);
+//		fitToBox(resampledTrace);
 		Match bestMatch = null;
 		for (Template t : templates) {
 			Match m = optimalAngle(resampledTrace, t.getTrace());
@@ -57,8 +57,8 @@ public class Protrector3D {
 		c.y = -c.y;
 		c.z = -c.z;
 		translate(resampledTrace, c); // translate to origin
-//		normalize(resampledTrace);
-		fitToBox(resampledTrace);
+		normalize(resampledTrace);
+//		fitToBox(resampledTrace);
 
 		templates.add(new Template(trace, id));
 	}
@@ -128,8 +128,9 @@ public class Protrector3D {
 	public void normalize(List<Point3D> trace) {
 		double mag = 0;
 		for (Point3D p : trace) {
-			mag += p.x * p.x + p.y * p.y + p.z + p.z;
+			mag += p.x * p.x + p.y * p.y + p.z * p.z;
 		}
+		mag = Math.sqrt(mag);
 		if (mag != 0) {
 			mag = 1.0 / mag;
 		}

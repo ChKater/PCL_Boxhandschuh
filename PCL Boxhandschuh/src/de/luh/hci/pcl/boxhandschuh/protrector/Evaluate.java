@@ -13,6 +13,7 @@ import java.util.Random;
 
 import de.luh.hci.pcl.boxhandschuh.model.MeasurePoint;
 import de.luh.hci.pcl.boxhandschuh.model.Measurement;
+import de.luh.hci.pcl.boxhandschuh.transformation.MeasurementTo3dTrajectory;
 
 public class Evaluate {
 
@@ -25,6 +26,7 @@ public class Evaluate {
 			for (File file : dataDir.listFiles()) {
 				if (file.isFile() && !file.getName().startsWith(".")) {
 					String prefix = file.getName().split("_")[0];
+					
 					List<List<Point3D>> traceList = dataSets.get(prefix);
 					if(traceList == null){
 						traceList = new ArrayList<>();
@@ -55,7 +57,7 @@ public class Evaluate {
 							m.getMeasurement().add(p);
 							now += 10;
 						}
-						traceList.add(mt3dt.measurementTo3DTrajectory(m));
+						traceList.add(transformToPoint3d(m));
 
 					}
 					br.close();
@@ -101,5 +103,14 @@ public class Evaluate {
 			e.printStackTrace();
 		}
 
+	}
+	
+	public static List<Point3D> transformToPoint3d(Measurement m){
+		List<Point3D> trace = new ArrayList<>();
+		for (int i = 0; i < m.getMeasurement().size(); i++) {
+			MeasurePoint p = m.getMeasurement().get(i);
+			trace.add(new Point3D(p.getAx(), p.getAy(), p.getAz()));
+		}
+		return trace;
 	}
 }

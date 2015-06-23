@@ -196,10 +196,10 @@ public class DemoJzy3dFX extends Application {
         int steps = 80;
 
         // Create the object to represent the function over the given range.
-        final Shape surface = Builder.buildOrthonormal(mapper, range, steps);
-        surface.setColorMapper(new ColorMapper(new ColorMapRainbow(), surface.getBounds().getZmin(), surface.getBounds().getZmax(), new Color(1, 1, 1, .5f)));
-        surface.setFaceDisplayed(true);
-        surface.setWireframeDisplayed(false);
+//        final Shape surface = Builder.buildOrthonormal(mapper, range, steps);
+//        surface.setColorMapper(new ColorMapper(new ColorMapRainbow(), surface.getBounds().getZmin(), surface.getBounds().getZmax(), new Color(1, 1, 1, .5f)));
+//        surface.setFaceDisplayed(true);
+//        surface.setWireframeDisplayed(false);
 
         // -------------------------------
         // Create a chart

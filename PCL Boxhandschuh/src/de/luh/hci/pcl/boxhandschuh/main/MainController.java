@@ -4,7 +4,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import de.luh.hci.pcl.boxhandschuh.view.SensorMonitor;
-import de.luh.hci.pcl.boxhandschuh.view.Trajectory3D;
+import de.luh.hci.pcl.boxhandschuh.view.Measurements;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Tab;
@@ -18,7 +18,8 @@ public class MainController implements Initializable{
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		sensorMonitor.setContent(new SensorMonitor());
-		trajectory3D.setContent(new Trajectory3D());
+		trajectory3D.setContent(new Measurements());
+
 	}
 
 }
