@@ -1,7 +1,11 @@
 package de.luh.hci.pcl.boxhandschuh.protractor;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import org.apache.commons.math3.linear.ArrayRealVector;
@@ -10,11 +14,20 @@ import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
 
+import de.luh.hci.pcl.boxhandschuh.model.Punch;
+import de.luh.hci.pcl.boxhandschuh.transformation.MeasurementTo3dTrajectory;
+import de.luh.hci.pcl.boxhandschuh.transformation.MeasurementToAccelerometerTrace;
+import de.luh.hci.pcl.boxhandschuh.transformation.MeasurementToGyroskopTrace;
+import de.luh.hci.pcl.boxhandschuh.transformation.MeasurementToTrace;
+
 public class Protractor3D {
+
+	private static MeasurementToTrace mtacc = new MeasurementToAccelerometerTrace();
+	private static MeasurementToTrace mtgyr = new MeasurementToGyroskopTrace();
 
 	private static Protractor3D instance;
 	public static final int N = 32;
-	
+
 	public static final double S = 100;
 
 	private static Function<Point3D, Double> x = p -> {
@@ -26,31 +39,45 @@ public class Protractor3D {
 	private static Function<Point3D, Double> z = p -> {
 		return p.z;
 	};
-	
-	public static Protractor3D getInstance(){
-		if(instance == null){
+
+	private static Function<Template, List<Point3D>> accTemplate = x -> {
+		return x.getAccelerometerTrace();
+	};
+	private static Function<Template, List<Point3D>> gyrTemplate = x -> {
+		return x.getGyroskopTrace();
+	};
+	private static Function<Template, List<Point3D>> trajTemplate = x -> {
+		return x.getTrajectoryTrace();
+	};
+
+	public static Protractor3D getInstance() {
+		if (instance == null) {
 			instance = new Protractor3D();
+
 		}
 		return instance;
 	}
-	
+
 	public List<Template> templates = new ArrayList<>();
-	
 
-	private Protractor3D(){}
-
-	public void addTemplate(String id, List<Point3D> trace) {
-		templates.add(new Template(prepareTrace(trace), id));
+	private Protractor3D() {
 	}
-	
-	public List<Point3D> prepareTrace(List<Point3D> trace){
+
+	public void addTemplate(Punch p) {
+		templates.add(new Template(prepareTrace(mtacc.transform(p
+				.getMeasurement())), prepareTrace(mtgyr.transform(p
+				.getMeasurement())), prepareTrace(p.getTrace()), p
+				.getClassName()));
+	}
+
+	public List<Point3D> prepareTrace(List<Point3D> trace) {
 		List<Point3D> resampledTrace = resample(trace);
 		Point3D c = centroid(resampledTrace);
 		c.x = -c.x;
 		c.y = -c.y;
 		c.z = -c.z;
 		translate(resampledTrace, c); // translate to origin
-//		normalize(resampledTrace);
+		// normalize(resampledTrace);
 		fitToBox(resampledTrace);
 		return resampledTrace;
 	}
@@ -124,7 +151,7 @@ public class Protractor3D {
 						-S(x, x, g, t) - S(y, y, g, t) + S(z, z, g, t) } };
 		RealMatrix n = MatrixUtils.createRealMatrix(nData);
 		EigenDecomposition d = new EigenDecomposition(n);
-		
+
 		double[] eigenvalues = d.getRealEigenvalues();
 		double max = eigenvalues[0];
 		int pos = 0;
@@ -142,21 +169,21 @@ public class Protractor3D {
 		}
 		eigenvector = eigenvector.mapMultiply(norm);
 		double[] eigenvectorVal = eigenvector.toArray();
-		double theta = 2.0 / Math.cos(eigenvectorVal[3] * 180.0 / Math.PI);
+		double theta = 2.0 * Math.acos(eigenvectorVal[0]);
 		double s = Math.sin(-theta);
 		double c = Math.cos(-theta);
-		double qx = eigenvectorVal[2];
-		double qy = eigenvectorVal[1];
-		double qz = eigenvectorVal[0];
+		double qx = eigenvectorVal[1];
+		double qy = eigenvectorVal[2];
+		double qz = eigenvectorVal[3];
 		double qxqx = qx * qx;
 		double qyqy = qy * qy;
 		double qzqz = qz * qz;
 		double c1M = 1 - c;
 		double[][] rData = {
-				{ qxqx * (1 - qxqx) * c, qx * qy * c1M - qz * s,
+				{ qxqx + (1 - qxqx) * c, qx * qy * c1M - qz * s,
 						qx * qz * c1M + qy * s },
-				{ qx * qy * c1M + qz * s, qyqy * (1 - qyqy) * c,
-						qy * qz * c1M - qx * c },
+				{ qx * qy * c1M + qz * s, qyqy + (1 - qyqy) * c,
+						qy * qz * c1M - qx * s },
 				{ qx * qz * c1M, qy * qz * c1M + qx * s, qzqz + (1 - qzqz) * c } };
 		return MatrixUtils.createRealMatrix(rData);
 	}
@@ -204,18 +231,69 @@ public class Protractor3D {
 		return length;
 	}
 
-	public Match recognize(List<Point3D> trace) {
+	private List<Match> _recognize(List<Point3D> trace,
+			Function<Template, List<Point3D>> template) {
 		List<Point3D> preparedTrace = prepareTrace(trace);
-		Match bestMatch = null;
+		List<Match> matches = new ArrayList<>(templates.size());
+
 		for (Template t : templates) {
-			Match m = optimalAngle(preparedTrace, t.getTrace());
-			if (bestMatch == null || m.score > bestMatch.score) {
-				m.template = t;
-				bestMatch = m;
+			Match m = optimalAngle(preparedTrace, template.apply(t));
+			m.template = t;
+
+			matches.add(m);
+		}
+		Collections.sort(matches);
+		return matches;
+	}
+
+	public Match recognizeByAccelerometer(Punch p) {
+		return _recognize(mtacc.transform(p.getMeasurement()), accTemplate)
+				.get(0);
+	}
+
+	public Match recognizeByGyroskop(Punch p) {
+		return _recognize(mtgyr.transform(p.getMeasurement()), gyrTemplate)
+				.get(0);
+	}
+
+	public Match recognizeByTrajectory(Punch p) {
+		return _recognize(p.getTrace(), trajTemplate).get(0);
+	}
+
+	public String recognizeByDCA(Punch p) {
+		List<Match> accResults = _recognize(
+				mtacc.transform(p.getMeasurement()), accTemplate);
+		List<Match> gyrResults = _recognize(
+				mtacc.transform(p.getMeasurement()), accTemplate);
+
+		Map<String, Float> count = new HashMap<>();
+		for (int i = 0; i < accResults.size(); i++) {
+			String idAcc = accResults.get(i).template.getId();
+			float countAcc = 0;
+
+			try {
+				countAcc = count.get(idAcc);
+			} catch (Exception e) {
+			}
+			count.put(idAcc, countAcc + 1);
+			String idAGyr = gyrResults.get(i).template.getId();
+			float countGyr = 0;
+			try {
+				countGyr = count.get(idAcc);
+			} catch (Exception e) {
+			}
+			count.put(idAGyr, countGyr + 1);
+		}
+		String bestID = null;
+		float bestCount = Float.MIN_VALUE;
+		for (String id : count.keySet()) {
+			float currentCount = count.get(id);
+			if (currentCount > bestCount) {
+				bestID = id;
+				bestCount = currentCount;
 			}
 		}
-
-		return bestMatch;
+		return bestID;
 	}
 
 	public List<Point3D> resample(List<Point3D> trace) {
@@ -258,7 +336,8 @@ public class Protractor3D {
 			}
 			pp = p;
 		}
-		newTrace.add(trace.get(m - 1).copy()); // add last point of original trace
+		newTrace.add(trace.get(m - 1).copy()); // add last point of original
+												// trace
 		return newTrace;
 	}
 
@@ -286,4 +365,5 @@ public class Protractor3D {
 			point.z += translationVector.z;
 		}
 	}
+
 }

@@ -4,7 +4,7 @@ import org.apache.commons.math3.linear.RealMatrix;
 
 
 
-public class Match {
+public class Match implements Comparable<Match>{
 	public double score;
 	public RealMatrix r;
 	public Template template;
@@ -13,4 +13,11 @@ public class Match {
 		this.score = aScore;
 		this.r = r;
 	}
+
+	@Override
+	public int compareTo(Match other) {
+		return Double.compare(score, other.score) * -1;
+	}
+	
+	
 }

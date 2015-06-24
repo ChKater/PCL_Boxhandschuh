@@ -5,27 +5,48 @@ import java.util.List;
 
 public class Template {
 
-	private List<Point3D> trace;
-	private String id;
+	private List<Point3D> accelerometerTrace;
+	private List<Point3D> gyroskopTrace;
+	private List<Point3D> trajectoryTrace;
 
-	public Template(List<Point3D> trace, String id) {
-		super();
-		this.trace = trace;
-		this.id = id;
-	}
+	private String id;
 
 	public Template(String id) {
 		super();
-		this.trace = new ArrayList<>();
+		this.gyroskopTrace = new ArrayList<>();
+		this.accelerometerTrace = new ArrayList<>();
+		this.trajectoryTrace = new ArrayList<>();
 		this.id = id;
 	}
 	
-	public List<Point3D> getTrace() {
-		return trace;
+	
+
+	public Template(List<Point3D> accelerometerTrace,
+			List<Point3D> gyroskopTrace, List<Point3D> trajectoryTrace,
+			String id) {
+		super();
+		this.accelerometerTrace = accelerometerTrace;
+		this.gyroskopTrace = gyroskopTrace;
+		this.trajectoryTrace = trajectoryTrace;
+		this.id = id;
 	}
 
-	public void setTrace(List<Point3D> trace) {
-		this.trace = trace;
+
+
+	public List<Point3D> getAccelerometerTrace() {
+		return accelerometerTrace;
+	}
+
+	public void setAccelerometerTrace(List<Point3D> accelerometerTrace) {
+		this.accelerometerTrace = accelerometerTrace;
+	}
+
+	public List<Point3D> getGyroskopTrace() {
+		return gyroskopTrace;
+	}
+
+	public void setGyroskopTrace(List<Point3D> gyroskopTrace) {
+		this.gyroskopTrace = gyroskopTrace;
 	}
 
 	public String getId() {
@@ -35,10 +56,18 @@ public class Template {
 	public void setId(String id) {
 		this.id = id;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "[" + id + "]:";
+	}
+
+	public List<Point3D> getTrajectoryTrace() {
+		return trajectoryTrace;
+	}
+
+	public void setTrajectoryTrace(List<Point3D> trajectoryTrace) {
+		this.trajectoryTrace = trajectoryTrace;
 	}
 
 }

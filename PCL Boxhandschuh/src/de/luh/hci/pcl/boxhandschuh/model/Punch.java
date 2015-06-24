@@ -7,7 +7,8 @@ import de.luh.hci.pcl.boxhandschuh.protractor.Point3D;
 
 public class Punch {
 
-	private static SimpleDateFormat dt = new SimpleDateFormat("dd mm yyy hh:mm:ss:SSS"); 
+	private static final SimpleDateFormat sdf = new SimpleDateFormat(
+			"dd.MM.yyyy HH:mm:ss:S");	
 	private Measurement measurement;
 	private List<Point3D> trace;
 	private String className;
@@ -56,7 +57,7 @@ public class Punch {
 	
 	@Override
 	public String toString(){
-		return className + " (von " + person + ") am " + dt.format(measurement.getStart());
+		return className + " [person= " + person + ", time=" + sdf.format(measurement.getStart()) + " , length=" + measurement.getMeasurement().size();
 	}
 
 	 

@@ -11,28 +11,30 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+import de.luh.hci.pcl.boxhandschuh.io.PunchIO;
 import de.luh.hci.pcl.boxhandschuh.model.MeasurePoint;
 import de.luh.hci.pcl.boxhandschuh.model.Measurement;
+import de.luh.hci.pcl.boxhandschuh.model.Punch;
 import de.luh.hci.pcl.boxhandschuh.transformation.MeasurementTo3dTrajectory;
 
 public class Evaluate {
 
 	public static void main(String[] args) {
-		File dataDir = new File("data");
-		HashMap<String, List<List<Point3D>>> dataSets = new HashMap<>();
+		File dataDir = new File("protractor-evaluate");
+		HashMap<String, List<Punch>> dataSets = new HashMap<>();
 		MeasurementTo3dTrajectory mt3dt = new MeasurementTo3dTrajectory();
 		try {
 
 			for (File file : dataDir.listFiles()) {
 				if (file.isFile() && !file.getName().startsWith(".")) {
 					String prefix = file.getName().split("_")[0];
-					
-					List<List<Point3D>> traceList = dataSets.get(prefix);
-					if(traceList == null){
-						traceList = new ArrayList<>();
-						dataSets.put(prefix, traceList);
+
+					List<Punch> punches = dataSets.get(prefix);
+					if (punches == null) {
+						punches = new ArrayList<>();
+						dataSets.put(prefix, punches);
 					}
-					
+
 					BufferedReader br = new BufferedReader(new FileReader(file));
 					ArrayList<String> lines = new ArrayList<>();
 					String line;
@@ -57,43 +59,156 @@ public class Evaluate {
 							m.getMeasurement().add(p);
 							now += 10;
 						}
-						traceList.add(transformToPoint3d(m));
-
+						Punch punch = new Punch(m, mt3dt.transform(m), prefix,
+								"Guido");
+//						PunchIO.savePunch(punch);
+						punches.add(punch);
+					} else {
+						System.out.println(file.getName());
 					}
 					br.close();
 				}
 			}
 			Protractor3D p3D = Protractor3D.getInstance();
 			Random rnd = new Random();
-			//train
+			
+			HashMap<String, HashMap<String, Integer>> resultTraj = new HashMap<>();
 			for (String prefix : dataSets.keySet()) {
-				List<List<Point3D>> traceList = dataSets.get(prefix);
-				for (int i = 0; i < 5; i++) {
-					p3D.addTemplate(prefix, traceList.remove(rnd.nextInt(traceList.size())));
+				resultTraj.put(prefix, new HashMap<>());
+			}
+			
+			int RUNS = 10;
+			System.out.println("3d Trajectory");
+
+			for (int j = 0; j < RUNS; j++) {
+				HashMap<String, List<Punch>> data = copy(dataSets);
+				// train
+				for (String prefix : data.keySet()) {
+					List<Punch> traceList = data.get(prefix);
+					for (int i = 0; i < 4; i++) {
+						p3D.addTemplate(traceList.remove(rnd.nextInt(traceList
+								.size())));
+					}
+				}
+				
+
+				// test
+				for (String prefix : data.keySet()) {
+					HashMap<String, Integer> counting = resultTraj.get(prefix);
+					List<Punch> punches = data.get(prefix);
+					for (Punch punch : punches) {
+						Match m = p3D.recognizeByTrajectory(punch);
+						int count = 0;
+						try {
+							count = counting.get(m.template.getId());
+						} catch (Exception e) {
+						}
+						counting.put(m.template.getId(), count + 1);
+
+					}
 				}
 			}
 			
-			//test
-			for (String prefix : dataSets.keySet()) {
-				System.out.println("class: " + prefix);
-				HashMap<String, Integer> counting = new HashMap<>();
-
-				List<List<Point3D>> traceList = dataSets.get(prefix);
-				for (List<Point3D> trace : traceList) {
-					Match m = p3D.recognize(trace);
-					Integer count = counting.get(m.template.getId());
-					if(count == null){
-						counting.put(m.template.getId(), 1);
-					} else {
-						counting.put(m.template.getId(), count + 1);
-					}
-				}
-				System.out.println("recognized:");
+			for (String prefix : resultTraj.keySet()) {
+				System.out.println("Klasse: " + prefix);
+				System.out.println("Erkannt:");
+				HashMap<String, Integer> counting = resultTraj.get(prefix);
 				for (String id : counting.keySet()) {
 					System.out.println(id + ": " + counting.get(id));
 				}
 			}
-		
+			
+			System.out.println("Acc");
+			HashMap<String, HashMap<String, Integer>> resultAcc = new HashMap<>();
+			for (String prefix : dataSets.keySet()) {
+				resultAcc.put(prefix, new HashMap<>());
+			}
+			
+			
+
+			for (int j = 0; j < RUNS; j++) {
+				HashMap<String, List<Punch>> data = copy(dataSets);
+				// train
+				for (String prefix : data.keySet()) {
+					List<Punch> traceList = data.get(prefix);
+					for (int i = 0; i < 4; i++) {
+						p3D.addTemplate(traceList.remove(rnd.nextInt(traceList
+								.size())));
+					}
+				}
+				
+
+				// test
+				for (String prefix : data.keySet()) {
+					HashMap<String, Integer> counting = resultAcc.get(prefix);
+					List<Punch> punches = data.get(prefix);
+					for (Punch punch : punches) {
+						Match m = p3D.recognizeByAccelerometer(punch);
+						int count = 0;
+						try {
+							count = counting.get(m.template.getId());
+						} catch (Exception e) {
+						}
+						counting.put(m.template.getId(), count + 1);
+
+					}
+				}
+			}
+			
+			for (String prefix : resultAcc.keySet()) {
+				System.out.println("Klasse: " + prefix);
+				System.out.println("Erkannt:");
+				HashMap<String, Integer> counting = resultAcc.get(prefix);
+				for (String id : counting.keySet()) {
+					System.out.println(id + ": " + counting.get(id));
+				}
+			}
+			
+			System.out.println("DCA");
+			HashMap<String, HashMap<String, Integer>> resultDCA = new HashMap<>();
+			for (String prefix : dataSets.keySet()) {
+				resultDCA.put(prefix, new HashMap<>());
+			}
+			
+			
+
+			for (int j = 0; j < RUNS; j++) {
+				HashMap<String, List<Punch>> data = copy(dataSets);
+				// train
+				for (String prefix : data.keySet()) {
+					List<Punch> traceList = data.get(prefix);
+					for (int i = 0; i < 4; i++) {
+						p3D.addTemplate(traceList.remove(rnd.nextInt(traceList
+								.size())));
+					}
+				}
+				
+
+				// test
+				for (String prefix : data.keySet()) {
+					HashMap<String, Integer> counting = resultDCA.get(prefix);
+					List<Punch> punches = data.get(prefix);
+					for (Punch punch : punches) {
+						String m = p3D.recognizeByDCA(punch);
+						int count = 0;
+						try {
+							count = counting.get(m);
+						} catch (Exception e) {
+						}
+						counting.put(m, count + 1);
+
+					}
+				}
+			}
+			
+			for (String prefix : resultDCA.keySet()) {
+				System.out.println("Klasse: " + prefix);
+				System.out.println("Erkannt:");
+				HashMap<String, Integer> counting = resultDCA.get(prefix);
+				for (String id : counting.keySet()) {
+					System.out.println(id + ": " + counting.get(id));
+				}
+			}
 
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -104,8 +219,18 @@ public class Evaluate {
 		}
 
 	}
-	
-	public static List<Point3D> transformToPoint3d(Measurement m){
+
+	private static HashMap<String, List<Punch>> copy(
+			HashMap<String, List<Punch>> dataSets) {
+		HashMap<String, List<Punch>> copy = new HashMap<>();
+		for (String id : dataSets.keySet()) {
+			List<Punch> punches = dataSets.get(id);
+			copy.put(id, new ArrayList<>(punches));
+		}
+		return copy;
+	}
+
+	public static List<Point3D> transformToPoint3d(Measurement m) {
 		List<Point3D> trace = new ArrayList<>();
 		for (int i = 0; i < m.getMeasurement().size(); i++) {
 			MeasurePoint p = m.getMeasurement().get(i);
