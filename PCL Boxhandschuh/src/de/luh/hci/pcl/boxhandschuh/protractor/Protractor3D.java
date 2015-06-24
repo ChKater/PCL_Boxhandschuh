@@ -260,34 +260,36 @@ public class Protractor3D {
 		return _recognize(p.getTrace(), trajTemplate).get(0);
 	}
 
-	public String recognizeByDCA(Punch p) {
+	public String recognizeByDCA(Punch p, double bias) {
 		List<Match> accResults = _recognize(
 				mtacc.transform(p.getMeasurement()), accTemplate);
 		List<Match> gyrResults = _recognize(
-				mtacc.transform(p.getMeasurement()), accTemplate);
+				mtacc.transform(p.getMeasurement()), gyrTemplate);
 
-		Map<String, Float> count = new HashMap<>();
+		Map<String, Double> count = new HashMap<>();
 		for (int i = 0; i < accResults.size(); i++) {
 			String idAcc = accResults.get(i).template.getId();
-			float countAcc = 0;
+			double countAcc = 0;
 
 			try {
 				countAcc = count.get(idAcc);
 			} catch (Exception e) {
 			}
-			count.put(idAcc, countAcc + 1);
+			double div = bias * i + 1.0;
+			double add = 1.0 / div;
+			count.put(idAcc, countAcc + add);
 			String idAGyr = gyrResults.get(i).template.getId();
-			float countGyr = 0;
+			double countGyr = 0;
 			try {
 				countGyr = count.get(idAcc);
 			} catch (Exception e) {
 			}
-			count.put(idAGyr, countGyr + 1);
+			count.put(idAGyr, countGyr + add);
 		}
 		String bestID = null;
-		float bestCount = Float.MIN_VALUE;
+		double bestCount = Double.MIN_VALUE;
 		for (String id : count.keySet()) {
-			float currentCount = count.get(id);
+			double currentCount = count.get(id);
 			if (currentCount > bestCount) {
 				bestID = id;
 				bestCount = currentCount;

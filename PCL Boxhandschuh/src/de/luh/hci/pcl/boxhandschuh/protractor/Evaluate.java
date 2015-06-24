@@ -189,7 +189,7 @@ public class Evaluate {
 					HashMap<String, Integer> counting = resultDCA.get(prefix);
 					List<Punch> punches = data.get(prefix);
 					for (Punch punch : punches) {
-						String m = p3D.recognizeByDCA(punch);
+						String m = p3D.recognizeByDCA(punch, 0.0);
 						int count = 0;
 						try {
 							count = counting.get(m);
