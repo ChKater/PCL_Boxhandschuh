@@ -2,6 +2,8 @@ package arduino;
 
 import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
+import gnu.io.SerialPortEvent;
+import gnu.io.SerialPortEventListener;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,6 +11,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.concurrent.TimeUnit;
 
 import javafx.scene.chart.Chart;
 
@@ -19,7 +22,7 @@ import org.jzy3d.plot3d.primitives.Scatter;
 
 import application.Measurements;
 
-public class ArduinoConnection implements Runnable {
+public class ArduinoConnection implements Runnable, SerialPortEventListener {
 
     private static ArduinoConnection instance;
 
@@ -34,7 +37,9 @@ public class ArduinoConnection implements Runnable {
                                                                                 // OS
                                                                                 // X
             "/dev/ttyUSB0", // Linux
-            "/dev/ttyACM0", // Linux
+           // "/dev/ttyACM0", // Linux
+          //  "/dev/ttyACM1", // Linux
+            "/dev/ttyS80", // Linux
             "COM4", // Windows
             "/dev/cu.usbmodem1411" };
 
@@ -65,7 +70,7 @@ public class ArduinoConnection implements Runnable {
 
     private ArduinoConnection() {
         initialize();
-        //new Thread(this, "ArduinoConnection").start();
+        new Thread(this, "ArduinoConnection").start();
 
     }
     
@@ -92,6 +97,7 @@ public class ArduinoConnection implements Runnable {
             CommPortIdentifier currPortId = (CommPortIdentifier) portEnum.nextElement();
             for (String portName : PORT_NAMES) {
                 if (currPortId.getName().equals(portName)) {
+        		    System.out.println("Found port: "+ portName);
                     portId = currPortId;
                     break;
                 }
@@ -108,6 +114,11 @@ public class ArduinoConnection implements Runnable {
             serialPort.setSerialPortParams(DATA_RATE, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
 
             input = serialPort.getInputStream();
+          
+            /* man kann die Daten in dieser Weise auslesen
+           serialPort.addEventListener(this);
+           serialPort.notifyOnDataAvailable(true);
+           */
 
         } catch (Exception e) {
             System.err.println(e.toString());
@@ -117,9 +128,11 @@ public class ArduinoConnection implements Runnable {
     
     public boolean run = true;
 
+	private BufferedReader reader;
+
     @Override
     public void run() {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+        reader = new BufferedReader(new InputStreamReader(input));
         boolean header = false;
         int prev = 0;
         int current = 0;
@@ -152,7 +165,9 @@ public class ArduinoConnection implements Runnable {
                 // prev = current;
 
                 String inputLine = reader.readLine();
-               measure.sendData(inputLine);
+                
+                System.out.println(inputLine);
+               //measure.sendData(inputLine);
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -173,4 +188,21 @@ public class ArduinoConnection implements Runnable {
     public void setMeasure(Measurements measure) {
         this.measure = measure;
     }
+
+	@Override
+	public void serialEvent(SerialPortEvent oEvent) {
+		if (oEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
+            try {
+            	 String inputLine=null;
+                 if (reader.ready()) {
+                     inputLine = reader.readLine();
+                     System.out.println(inputLine);
+                 }
+            } catch (Exception e) {
+                System.err.println(e.toString());
+            }
+        }
+		// TODO Auto-generated method stub
+		
+	}
 }
