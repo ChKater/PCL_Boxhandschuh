@@ -13,7 +13,7 @@ import java.text.SimpleDateFormat;
 import de.luh.hci.pcl.boxhandschuh.model.MeasurePoint;
 import de.luh.hci.pcl.boxhandschuh.model.Measurement;
 import de.luh.hci.pcl.boxhandschuh.model.Punch;
-import de.luh.hci.pcl.boxhandschuh.protrector.MeasurementTo3dTrajectory;
+import de.luh.hci.pcl.boxhandschuh.transformation.MeasurementTo3dTrajectory;
 
 public class PunchIO {
 	private static final SimpleDateFormat sdf = new SimpleDateFormat(
@@ -63,8 +63,8 @@ public class PunchIO {
 							Double.parseDouble(values[10]),
 							Double.parseDouble(values[11]));
 					m.getMeasurement().add(p);
-					person = values[12];
-					className = values[13];
+					person = values[13];
+					className = values[12];
 				}
 			}
 			br.close();
@@ -81,7 +81,7 @@ public class PunchIO {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return new Punch(m, mt3dt.measurementTo3DTrajectory(m), className,
+		return new Punch(m, mt3dt.transform(m), className,
 				person);
 	}
 

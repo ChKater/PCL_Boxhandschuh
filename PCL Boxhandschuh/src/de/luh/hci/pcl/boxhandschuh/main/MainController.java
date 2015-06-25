@@ -3,22 +3,23 @@ package de.luh.hci.pcl.boxhandschuh.main;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import de.luh.hci.pcl.boxhandschuh.view.SensorMonitor;
-import de.luh.hci.pcl.boxhandschuh.view.Trajectory3D;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Tab;
+import de.luh.hci.pcl.boxhandschuh.view.Measurements;
+import de.luh.hci.pcl.boxhandschuh.view.SensorMonitor;
 
 public class MainController implements Initializable{
 
 	@FXML
-	private Tab sensorMonitor, trajectory3D;
+	private Tab sensorMonitor, measurements;
 	
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		sensorMonitor.setContent(new SensorMonitor());
-		trajectory3D.setContent(new Trajectory3D());
+		measurements.setContent(new Measurements());
+
 	}
 
 }

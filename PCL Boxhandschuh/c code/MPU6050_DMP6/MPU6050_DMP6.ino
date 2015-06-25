@@ -90,14 +90,14 @@ MPU6050 mpu;
 // (in degrees) calculated from the quaternions coming from the FIFO.
 // Note that Euler angles suffer from gimbal lock (for more info, see
 // http://en.wikipedia.org/wiki/Gimbal_lock)
-//#define OUTPUT_READABLE_EULER
+#define OUTPUT_READABLE_EULER
 
 // uncomment "OUTPUT_READABLE_YAWPITCHROLL" if you want to see the yaw/
 // pitch/roll angles (in degrees) calculated from the quaternions coming
 // from the FIFO. Note this also requires gravity vector calculations.
 // Also note that yaw/pitch/roll angles suffer from gimbal lock (for
 // more info, see: http://en.wikipedia.org/wiki/Gimbal_lock)
-//#define OUTPUT_READABLE_YAWPITCHROLL
+#define OUTPUT_READABLE_YAWPITCHROLL
 
 
 // uncomment "OUTPUT_READABLE_REALACCEL" if you want to see acceleration
@@ -111,7 +111,7 @@ MPU6050 mpu;
 // components with gravity removed and adjusted for the world frame of
 // reference (yaw is relative to initial orientation, since no magnetometer
 // is present in this case). Could be quite handy in some cases.
-//#define OUTPUT_READABLE_WORLDACCEL
+#define OUTPUT_READABLE_WORLDACCEL
 
 // uncomment "OUTPUT_TEAPOT" if you want output that matches the
 // format used for the InvenSense teapot demo
@@ -202,10 +202,10 @@ void setup() {
     devStatus = mpu.dmpInitialize();
 
     // supply your own gyro offsets here, scaled for min sensitivity
-    mpu.setXGyroOffset(220);
-    mpu.setYGyroOffset(76);
-    mpu.setZGyroOffset(-85);
-    mpu.setZAccelOffset(1788); // 1688 factory default for my test chip
+    // mpu.setXGyroOffset(220);
+    // mpu.setYGyroOffset(76);
+    // mpu.setZGyroOffset(-85);
+    // mpu.setZAccelOffset(1788); // 1688 factory default for my test chip
 
     // make sure it worked (returns 0 if so)
     if (devStatus == 0) {
@@ -246,9 +246,9 @@ void setup() {
 
 void loop() {
   float val1 = analogRead(1);
-    float val2 = analogRead(2);
-      float val3 = analogRead(3);
-        float val0 = analogRead(0);
+  float val2 = analogRead(2);
+  float val3 = analogRead(3);
+  float val0 = analogRead(0);
     // if programming failed, don't try to do anything
     if (!dmpReady) return;
 
@@ -294,13 +294,13 @@ void loop() {
         #ifdef OUTPUT_READABLE_QUATERNION
             // display quaternion values in easy matrix form: w x y z
             mpu.dmpGetQuaternion(&q, fifoBuffer);
-            Serial.print("quat\t");
+            Serial.print("quat;");
             Serial.print(q.w);
-            Serial.print("\t");
+            Serial.print(";");
             Serial.print(q.x);
-            Serial.print("\t");
+            Serial.print(";");
             Serial.print(q.y);
-            Serial.print("\t");
+            Serial.print(";");
             Serial.println(q.z);
         #endif
 
@@ -308,11 +308,11 @@ void loop() {
             // display Euler angles in degrees
             mpu.dmpGetQuaternion(&q, fifoBuffer);
             mpu.dmpGetEuler(euler, &q);
-            Serial.print("euler\t");
+            Serial.print("euler;");
             Serial.print(euler[0] * 180/M_PI);
-            Serial.print("\t");
+            Serial.print(";");
             Serial.print(euler[1] * 180/M_PI);
-            Serial.print("\t");
+            Serial.print(";");
             Serial.println(euler[2] * 180/M_PI);
         #endif
 
@@ -321,11 +321,11 @@ void loop() {
             mpu.dmpGetQuaternion(&q, fifoBuffer);
             mpu.dmpGetGravity(&gravity, &q);
             mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
-            Serial.print("ypr\t");
+            Serial.print("ypr;");
             Serial.print(ypr[0] * 180/M_PI);
-            Serial.print("\t");
+            Serial.print(";");
             Serial.print(ypr[1] * 180/M_PI);
-            Serial.print("\t");
+            Serial.print(";");
             Serial.println(ypr[2] * 180/M_PI);
         #endif
         
@@ -336,11 +336,11 @@ void loop() {
             mpu.dmpGetAccel(&aa, fifoBuffer);
             mpu.dmpGetGravity(&gravity, &q);
             mpu.dmpGetLinearAccel(&aaReal, &aa, &gravity);
-            Serial.print("areal\t");
+            Serial.print("areal;");
             Serial.print(aaReal.x);
-            Serial.print("\t");
+            Serial.print(";");
             Serial.print(aaReal.y);
-            Serial.print("\t");
+            Serial.print(";");
             Serial.println(aaReal.z);
         #endif
 
@@ -352,28 +352,27 @@ void loop() {
             mpu.dmpGetGravity(&gravity, &q);
             mpu.dmpGetLinearAccel(&aaReal, &aa, &gravity);
             mpu.dmpGetLinearAccelInWorld(&aaWorld, &aaReal, &q);
-            Serial.print("aworld\t");
+            Serial.print("aworld;");
             Serial.print(aaWorld.x);
-            Serial.print("\t");
+            Serial.print(";");
             Serial.print(aaWorld.y);
-            Serial.print("\t");
+            Serial.print(";");
             Serial.println(aaWorld.z);
         #endif
         
         #ifdef OUTPUT_FSR
-        
-          Serial.print("FSR0\t");
+          Serial.print("FSR;");
+          Serial.print("FSR0;");
           Serial.print(val0);
-          Serial.print("\n");
-          Serial.print("FSR1\t");
+          Serial.print(";");
+          Serial.print("FSR1;");
           Serial.print(val1);
-          Serial.print("\n");
-          Serial.print("FSR2\t");
+          Serial.print(";");
+          Serial.print("FSR2;");
           Serial.print(val2);
-          Serial.print("\n");
-          Serial.print("FSR3\t");
-          Serial.print(val3);
-          Serial.print("\n");
+          Serial.print(";");
+          Serial.print("FSR3;");
+          Serial.println(val3);
         
         #endif
 

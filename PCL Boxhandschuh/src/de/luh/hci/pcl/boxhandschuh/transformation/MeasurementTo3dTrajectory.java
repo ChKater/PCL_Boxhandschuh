@@ -1,4 +1,4 @@
-package de.luh.hci.pcl.boxhandschuh.protrector;
+package de.luh.hci.pcl.boxhandschuh.transformation;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -6,11 +6,12 @@ import java.util.List;
 
 import de.luh.hci.pcl.boxhandschuh.model.MeasurePoint;
 import de.luh.hci.pcl.boxhandschuh.model.Measurement;
+import de.luh.hci.pcl.boxhandschuh.protractor.Point3D;
 
-public class MeasurementTo3dTrajectory {
+public class MeasurementTo3dTrajectory implements MeasurementToTrace{
 
 	
-	public List<Point3D> measurementTo3DTrajectory(Measurement m){
+	public List<Point3D> transform(Measurement m){
 		Point3D position = new Point3D(0, 0, 0);
 		Point3D velocity =  new Point3D(0, 0, 0);
 		Date lastTimeStamp = m.getStart();

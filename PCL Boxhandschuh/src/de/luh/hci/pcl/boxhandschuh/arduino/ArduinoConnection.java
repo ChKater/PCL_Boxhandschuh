@@ -3,11 +3,16 @@ package de.luh.hci.pcl.boxhandschuh.arduino;
 import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 
+import de.luh.hci.pcl.boxhandschuh.model.MeasurePoint;
 import de.luh.hci.pcl.boxhandschuh.model.MeasurePointListener;
 import de.luh.hci.pcl.boxhandschuh.model.MeasurementListener;
 
@@ -128,8 +133,45 @@ public class ArduinoConnection implements Runnable {
 
     @Override
     public void run() {
+    	BufferedReader reader = new BufferedReader(new InputStreamReader(input));
         
-        
+    	while(true){
+    		try {
+				String input = null;
+				while((input = reader.readLine()).startsWith("euler")){}
+				//skip Euler
+				
+				//ypr
+				input = reader.readLine();
+				String[] ypr = input.split(";");
+				double gx = Double.parseDouble(ypr[1]);
+				double gy = Double.parseDouble(ypr[2]);
+				double gz = Double.parseDouble(ypr[3]);
+				
+				//aworld
+				input = reader.readLine();
+				String[] aworld = input.split(";");
+				double ax = Double.parseDouble(aworld[1]);
+				double ay = Double.parseDouble(aworld[2]);
+				double az = Double.parseDouble(aworld[3]);
+				
+				//fsr
+				input = reader.readLine();
+				String[] fsr = input.split(";");
+				double fsr0 = Double.parseDouble(fsr[2]);
+				double fsr1 = Double.parseDouble(fsr[4]);
+				double fsr2 = Double.parseDouble(fsr[6]);
+				double fsr3 = Double.parseDouble(fsr[8]);
+				
+				MeasurePoint mp = new MeasurePoint(new Date(), gx, gy, gz, ax, ay, az, fsr0, fsr1, fsr2, fsr3);
+				for (MeasurePointListener listener : measurePointListener) {
+					listener.OnMeasurePoint(mp);
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
 
     }
 

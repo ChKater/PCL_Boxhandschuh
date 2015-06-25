@@ -58,7 +58,7 @@
             <Insets />
          </opaqueInsets>
       </GridPane>
-      <GridPane fx:id="chartPane">
+      <GridPane fx:id="chartPane" style="-fx-background-color: #FFFFFF;">
         <columnConstraints>
           <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
         </columnConstraints>
