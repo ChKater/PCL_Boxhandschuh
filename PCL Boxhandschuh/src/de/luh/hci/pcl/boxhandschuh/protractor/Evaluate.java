@@ -164,6 +164,52 @@ public class Evaluate {
 				}
 			}
 			
+			System.out.println("Gyr");
+			HashMap<String, HashMap<String, Integer>> resultGyr = new HashMap<>();
+			for (String prefix : dataSets.keySet()) {
+				resultGyr.put(prefix, new HashMap<>());
+			}
+			
+			
+
+			for (int j = 0; j < RUNS; j++) {
+				HashMap<String, List<Punch>> data = copy(dataSets);
+				// train
+				for (String prefix : data.keySet()) {
+					List<Punch> traceList = data.get(prefix);
+					for (int i = 0; i < 4; i++) {
+						p3D.addTemplate(traceList.remove(rnd.nextInt(traceList
+								.size())));
+					}
+				}
+				
+
+				// test
+				for (String prefix : data.keySet()) {
+					HashMap<String, Integer> counting = resultGyr.get(prefix);
+					List<Punch> punches = data.get(prefix);
+					for (Punch punch : punches) {
+						Match m = p3D.recognizeByGyroskop(punch);
+						int count = 0;
+						try {
+							count = counting.get(m.template.getId());
+						} catch (Exception e) {
+						}
+						counting.put(m.template.getId(), count + 1);
+
+					}
+				}
+			}
+			
+			for (String prefix : resultGyr.keySet()) {
+				System.out.println("Klasse: " + prefix);
+				System.out.println("Erkannt:");
+				HashMap<String, Integer> counting = resultGyr.get(prefix);
+				for (String id : counting.keySet()) {
+					System.out.println(id + ": " + counting.get(id));
+				}
+			}
+			
 			System.out.println("DCA");
 			HashMap<String, HashMap<String, Integer>> resultDCA = new HashMap<>();
 			for (String prefix : dataSets.keySet()) {
@@ -189,7 +235,7 @@ public class Evaluate {
 					HashMap<String, Integer> counting = resultDCA.get(prefix);
 					List<Punch> punches = data.get(prefix);
 					for (Punch punch : punches) {
-						String m = p3D.recognizeByDCA(punch, 0.0);
+						String m = p3D.recognizeByDCA(punch, 1.0);
 						int count = 0;
 						try {
 							count = counting.get(m);
@@ -230,12 +276,5 @@ public class Evaluate {
 		return copy;
 	}
 
-	public static List<Point3D> transformToPoint3d(Measurement m) {
-		List<Point3D> trace = new ArrayList<>();
-		for (int i = 0; i < m.getMeasurement().size(); i++) {
-			MeasurePoint p = m.getMeasurement().get(i);
-			trace.add(new Point3D(p.getAx(), p.getAy(), p.getAz()));
-		}
-		return trace;
-	}
+	
 }

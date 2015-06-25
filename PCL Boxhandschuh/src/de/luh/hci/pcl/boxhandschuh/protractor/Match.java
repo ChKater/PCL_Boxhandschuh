@@ -19,5 +19,8 @@ public class Match implements Comparable<Match>{
 		return Double.compare(score, other.score) * -1;
 	}
 	
-	
+	@Override
+	public String toString() {
+		return template.getId();
+	}
 }

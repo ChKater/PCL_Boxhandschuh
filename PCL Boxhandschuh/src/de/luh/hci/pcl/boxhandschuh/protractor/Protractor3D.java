@@ -264,10 +264,10 @@ public class Protractor3D {
 		List<Match> accResults = _recognize(
 				mtacc.transform(p.getMeasurement()), accTemplate);
 		List<Match> gyrResults = _recognize(
-				mtacc.transform(p.getMeasurement()), gyrTemplate);
+				mtgyr.transform(p.getMeasurement()), gyrTemplate);
 
 		Map<String, Double> count = new HashMap<>();
-		for (int i = 0; i < accResults.size(); i++) {
+		for (int i = 0; i < 10; i++) {
 			String idAcc = accResults.get(i).template.getId();
 			double countAcc = 0;
 
