@@ -2,6 +2,8 @@ package arduino;
 
 import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
+import gnu.io.SerialPortEvent;
+import gnu.io.SerialPortEventListener;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,6 +11,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.concurrent.TimeUnit;
 
 import javafx.scene.chart.Chart;
 
@@ -20,6 +23,7 @@ import org.jzy3d.plot3d.primitives.Scatter;
 import application.Measurements;
 
 public class ArduinoConnection implements Runnable {
+
 
 	private static ArduinoConnection instance;
 
@@ -35,6 +39,7 @@ public class ArduinoConnection implements Runnable {
 																				// X
 			"/dev/ttyUSB0", // Linux
 			"/dev/ttyACM0", // Linux
+			"/dev/ttyS80", // Linux
 			"COM4", // Windows
 			"/dev/cu.usbmodem1411" };
 

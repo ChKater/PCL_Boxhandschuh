@@ -9,7 +9,7 @@ import de.luh.hci.pcl.boxhandschuh.model.MeasurePoint;
 import de.luh.hci.pcl.boxhandschuh.model.MeasurePointListener;
 import de.luh.hci.pcl.boxhandschuh.model.MeasurementListener;
 
-public class FakeArduinoConnection {
+public class FakeArduinoConnection  {
 
 	private static Set<MeasurementListener> measurementListener = new HashSet<>();
 	private static Set<MeasurePointListener> measurePointListener = new HashSet<>();
@@ -49,4 +49,5 @@ public class FakeArduinoConnection {
 			
 		}).start();
 	}
+
 }
