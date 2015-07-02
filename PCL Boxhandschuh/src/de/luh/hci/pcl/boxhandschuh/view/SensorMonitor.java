@@ -10,7 +10,7 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.layout.GridPane;
-import de.luh.hci.pcl.boxhandschuh.arduino.FakeArduinoConnection;
+import de.luh.hci.pcl.boxhandschuh.arduino.ArduinoConnection;
 import de.luh.hci.pcl.boxhandschuh.model.MeasurePoint;
 import de.luh.hci.pcl.boxhandschuh.model.MeasurePointListener;
 import de.luh.hci.pcl.boxhandschuh.model.Measurement;
@@ -38,7 +38,7 @@ public class SensorMonitor extends GridPane implements MeasurePointListener {
 
 	public SensorMonitor() {
 		init();
-		FakeArduinoConnection.addMeasurePointListener(this);
+		ArduinoConnection.addMeasurePointListener(this);
 	}
 
 	public SensorMonitor(Measurement m) {

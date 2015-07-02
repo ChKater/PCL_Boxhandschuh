@@ -5,7 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import de.luh.hci.pcl.boxhandschuh.arduino.FakeArduinoConnection;
+import de.luh.hci.pcl.boxhandschuh.arduino.ArduinoConnection;
 
 public class Main extends Application {
 
@@ -14,7 +14,7 @@ public class Main extends Application {
 	public void start(Stage primaryStage) {
 		
 		try {
-			FakeArduinoConnection.start();
+			ArduinoConnection.start();
 			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(
 					"Main.fxml"));
 			Parent root = fxmlLoader.load();

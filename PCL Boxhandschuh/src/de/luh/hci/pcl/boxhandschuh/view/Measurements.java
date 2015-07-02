@@ -15,6 +15,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import de.luh.hci.pcl.boxhandschuh.arduino.ArduinoConnection;
 import de.luh.hci.pcl.boxhandschuh.arduino.FakeArduinoConnection;
 import de.luh.hci.pcl.boxhandschuh.io.PunchIO;
 import de.luh.hci.pcl.boxhandschuh.model.MeasurePoint;
@@ -75,7 +76,7 @@ public class Measurements extends SplitPane implements MeasurePointListener {
 					chartPane.add(punchview,0,0);
 				});
 		readData();
-		FakeArduinoConnection.addMeasurePointListener(this);
+		ArduinoConnection.addMeasurePointListener(this);
 
 	}
 
