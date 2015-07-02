@@ -2,6 +2,8 @@ package arduino;
 
 import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
+import gnu.io.SerialPortEvent;
+import gnu.io.SerialPortEventListener;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,6 +11,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.concurrent.TimeUnit;
 
 import javafx.scene.chart.Chart;
 
@@ -21,9 +24,11 @@ import application.Measurements;
 
 public class ArduinoConnection implements Runnable {
 
+
 	private static ArduinoConnection instance;
 
 	// Constants
+	private static final String PORT = "/dev/cu.usbmodem1d161";
 
 	/** Milliseconds to block while waiting for port open */
 	public static final int TIME_OUT = 2000;
@@ -35,8 +40,10 @@ public class ArduinoConnection implements Runnable {
 																				// X
 			"/dev/ttyUSB0", // Linux
 			"/dev/ttyACM0", // Linux
+			"/dev/ttyS80", // Linux
 			"COM4", // Windows
-			"/dev/cu.usbmodem1411" };
+			"/dev/cu.usbmodem1411", 
+			PORT};
 
 	private static final int BYTES_PER_MEASUREMENT = 8;
 
@@ -66,7 +73,7 @@ public class ArduinoConnection implements Runnable {
 
 	private ArduinoConnection() {
 		initialize();
-		// new Thread(this, "ArduinoConnection").start();
+		new Thread(this, "ArduinoConnection").start();
 
 	}
 
@@ -82,6 +89,7 @@ public class ArduinoConnection implements Runnable {
 	}
 
 	public void initialize() {
+        System.setProperty("gnu.io.rxtx.SerialPorts", PORT);
 
 		CommPortIdentifier portId = null;
 		@SuppressWarnings("rawtypes")

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -57,10 +58,15 @@ public class Protractor3D {
 		}
 		return instance;
 	}
+	
+	public void clear(){
+		templates.clear();
+	}
+	
 
 	public List<Template> templates = new ArrayList<>();
 
-	private Protractor3D() {
+	public Protractor3D() {
 	}
 
 	public void addTemplate(Punch p) {
@@ -259,8 +265,51 @@ public class Protractor3D {
 	public Match recognizeByTrajectory(Punch p) {
 		return _recognize(p.getTrace(), trajTemplate).get(0);
 	}
+	
+	//Jakub
+	public List<Match> recognizeAllByTrajectory(Punch p) {
+		return _recognize(p.getTrace(), trajTemplate);
+	}
 
 	public String recognizeByDCA(Punch p, double bias) {
+		List<Match> accResults = _recognize(
+				mtacc.transform(p.getMeasurement()), accTemplate);
+		List<Match> gyrResults = _recognize(
+				mtgyr.transform(p.getMeasurement()), gyrTemplate);
+
+		Map<String, Double> count = new HashMap<>();
+		for (int i = 0; i < 5; i++) {
+			String idAcc = accResults.get(i).template.getId();
+			double countAcc = 0;
+
+			try {
+				countAcc = count.get(idAcc);
+			} catch (Exception e) {
+			}
+			double div = bias * i + 1.0;
+			double add = 1.0 / div;
+			count.put(idAcc, countAcc + add);
+			String idAGyr = gyrResults.get(i).template.getId();
+			double countGyr = 0;
+			try {
+				countGyr = count.get(idAcc);
+			} catch (Exception e) {
+			}
+			count.put(idAGyr, countGyr + add);
+		}
+		String bestID = null;
+		double bestCount = Double.MIN_VALUE;
+		for (String id : count.keySet()) {
+			double currentCount = count.get(id);
+			if (currentCount > bestCount) {
+				bestID = id;
+				bestCount = currentCount;
+			}
+		}
+		return bestID;
+	}
+	
+	public List<String> recognizeByDCAExtended(Punch p, double bias) {
 		List<Match> accResults = _recognize(
 				mtacc.transform(p.getMeasurement()), accTemplate);
 		List<Match> gyrResults = _recognize(
@@ -295,7 +344,10 @@ public class Protractor3D {
 				bestCount = currentCount;
 			}
 		}
-		return bestID;
+		List<String> returnn = new LinkedList<>();
+		returnn.add(bestID);
+		returnn.add(String.valueOf(bestCount));
+		return returnn;
 	}
 
 	public List<Point3D> resample(List<Point3D> trace) {

@@ -77,10 +77,11 @@ public class Evaluate {
 				resultTraj.put(prefix, new HashMap<>());
 			}
 			
-			int RUNS = 10;
+			int RUNS = 100;
 			System.out.println("3d Trajectory");
 
 			for (int j = 0; j < RUNS; j++) {
+				p3D.clear();
 				HashMap<String, List<Punch>> data = copy(dataSets);
 				// train
 				for (String prefix : data.keySet()) {
@@ -127,6 +128,7 @@ public class Evaluate {
 			
 
 			for (int j = 0; j < RUNS; j++) {
+				p3D.clear();
 				HashMap<String, List<Punch>> data = copy(dataSets);
 				// train
 				for (String prefix : data.keySet()) {
@@ -173,6 +175,7 @@ public class Evaluate {
 			
 
 			for (int j = 0; j < RUNS; j++) {
+				p3D.clear();
 				HashMap<String, List<Punch>> data = copy(dataSets);
 				// train
 				for (String prefix : data.keySet()) {
@@ -219,6 +222,7 @@ public class Evaluate {
 			
 
 			for (int j = 0; j < RUNS; j++) {
+				p3D.clear();
 				HashMap<String, List<Punch>> data = copy(dataSets);
 				// train
 				for (String prefix : data.keySet()) {
