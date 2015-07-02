@@ -21,6 +21,7 @@ public class MeasurementTo3dTrajectory implements MeasurementToTrace{
 			MeasurePoint current = m.getMeasurement().get(i);
 			Date currentTimeStamp = current.getDate();
 			double dt = secondsBetweeen(lastTimeStamp, currentTimeStamp);
+			lastTimeStamp = currentTimeStamp;
 			double dtdt = dt * dt;
 			double factor = 9.8 / 16384;
 			Point3D acceleration = new Point3D(current.getAx() * factor, current.getAy() * factor, current.getAz() * factor);

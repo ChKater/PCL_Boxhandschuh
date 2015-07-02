@@ -75,58 +75,38 @@ public class CompareProtactorScores {
 			Random rnd = new Random();
 			
 			HashMap<String, HashMap<String, List<Double>>> resultTraj = new HashMap<>();
-			/*
-			for (String prefix : dataSets.keySet()) {
-				resultTraj.put(prefix, new HashMap<String, List<Double>>());
-			}
-			*/
 			for (String prefix : dataSets.keySet()) {
 				HashMap<String, List<Double>> m = new HashMap<String, List<Double>>();
 				for(String prefix2 : dataSets.keySet()){
 					List<Double> l = new ArrayList<Double>();
 					m.put(prefix2, l);
-					
 				}
 				resultTraj.put(prefix, m);
-//				resultTraj.put(prefix, new HashMap<String, List<Double>>());
 			}
 			
-			
+			/* ############################### 3d Trajectory   ########################### */
+
 			int RUNS = 10;
 			System.out.println("3d Trajectory");
 
 			for (int j = 0; j < RUNS; j++) {
 				HashMap<String, List<Punch>> data = copy(dataSets);
-				//Map<String, List<Punch>> data = Collections.unmodifiableMap(dataSets);
-				HashMap<String, List<Punch>> testData = new HashMap<String, List<Punch>>();
 				// train
 				for (String prefix : data.keySet()) {
 					List<Punch> traceList = data.get(prefix);
-					List<Punch> punchesToBeTested = new ArrayList<Punch>();
 
 					for (int i = 0; i < 4; i++) {
 						p3D.addTemplate(traceList.remove(rnd.nextInt(traceList
 								.size())));
 					}
-					for (int i = 0; i < 4; i++) {
-						punchesToBeTested.add(traceList.remove(rnd.nextInt(traceList
-								.size())));
-					}
-					
-					testData.put(prefix, punchesToBeTested);
 				}
 				
 
 				// test
-				for (String prefix : testData.keySet()) {
-//					HashMap<String, List<ExtendedMatch>> counting = new HashMap<String, List<ExtendedMatch>>();
+				for (String prefix : data.keySet()) {
 					HashMap<String, List<Double>> counting = resultTraj.get(prefix);
-					List<Punch> punches = testData.get(prefix);
-					List<ExtendedMatch> matchScores = new ArrayList<ExtendedMatch>();
-					MatchType r;
-					//Score score;
+					List<Punch> punches = data.get(prefix);
 					for (Punch punch : punches) {
-						//comment1();
 						Match m = p3D.recognizeByTrajectory(punch);
 						List<Double> scores = new ArrayList<Double>();
 
@@ -158,15 +138,11 @@ public class CompareProtactorScores {
 					System.out.println();
 				}
 			}
-//			System.exit(1000);
 			
+			
+			/* ############################### Acc ########################### */
+
 			System.out.println("Acc");
-			/*
-			HashMap<String, HashMap<String, Integer>> resultAcc = new HashMap<>();
-			for (String prefix : dataSets.keySet()) {
-				resultAcc.put(prefix, new HashMap<>());
-			}
-			*/
 			HashMap<String, HashMap<String, List<Double>>> resultAcc = new HashMap<>();
 			for (String prefix : dataSets.keySet()) {
 				HashMap<String, List<Double>> m = new HashMap<String, List<Double>>();
@@ -176,29 +152,21 @@ public class CompareProtactorScores {
 					
 				}
 				resultAcc.put(prefix, m);
-//				resultTraj.put(prefix, new HashMap<String, List<Double>>());
 			}
 			
 			
 
 			for (int j = 0; j < RUNS; j++) {
 				HashMap<String, List<Punch>> data = copy(dataSets);
-				HashMap<String, List<Punch>> testData = new HashMap<String, List<Punch>>();
 
 				// train
 				for (String prefix : data.keySet()) {
 					List<Punch> traceList = data.get(prefix);
-					List<Punch> punchesToBeTested = new ArrayList<Punch>();
 
 					for (int i = 0; i < 4; i++) {
 						p3D.addTemplate(traceList.remove(rnd.nextInt(traceList
 								.size())));
 					}
-					for (int i = 0; i < 4; i++) {
-						punchesToBeTested.add(traceList.remove(rnd.nextInt(traceList
-								.size())));
-					}
-					testData.put(prefix, punchesToBeTested);
 				}
 				
 
@@ -239,6 +207,9 @@ public class CompareProtactorScores {
 				}
 			}
 			
+			
+			/* ############################### Gyr ########################### */
+
 			System.out.println("Gyr");
 			HashMap<String, HashMap<String, List<Double>>> resultGyr = new HashMap<>();
 			for (String prefix : dataSets.keySet()) {
@@ -255,25 +226,15 @@ public class CompareProtactorScores {
 
 			for (int j = 0; j < RUNS; j++) {
 				HashMap<String, List<Punch>> data = copy(dataSets);
-				HashMap<String, List<Punch>> testData = new HashMap<String, List<Punch>>();
-
 				// train
 				for (String prefix : data.keySet()) {
 					List<Punch> traceList = data.get(prefix);
-					List<Punch> punchesToBeTested = new ArrayList<Punch>();
-
 					for (int i = 0; i < 4; i++) {
 						p3D.addTemplate(traceList.remove(rnd.nextInt(traceList
 								.size())));
 					}
-					for (int i = 0; i < 4; i++) {
-						punchesToBeTested.add(traceList.remove(rnd.nextInt(traceList
-								.size())));
-					}
-					testData.put(prefix, punchesToBeTested);
 				}
 				
-
 				// test
 				for (String prefix : data.keySet()) {
 					HashMap<String, List<Double>> counting = resultGyr.get(prefix);
@@ -283,7 +244,6 @@ public class CompareProtactorScores {
 						Match m = p3D.recognizeByGyroskop(punch);
 						double score = m.score;
 						scores = new ArrayList<Double>();
-
 						try {
 							scores = counting.get(m.template.getId());
 							scores.add(score);
@@ -299,7 +259,7 @@ public class CompareProtactorScores {
 			for (String prefix : resultGyr.keySet()) {
 				System.out.println("Klasse: " + prefix);
 				System.out.println("Erkannt:");
-				HashMap<String, List<Double>> counting = resultAcc.get(prefix);
+				HashMap<String, List<Double>> counting = resultGyr.get(prefix);
 				for (String id : counting.keySet()) {
 					System.out.print(id + ": ");
 					List<Double> ld = counting.get(id);
@@ -312,6 +272,8 @@ public class CompareProtactorScores {
 				}
 			}
 			
+			
+			/* ############################### DCA ########################### */
 			System.out.println("DCA");
 			HashMap<String, HashMap<String, List<Double>>> resultDCA = new HashMap<>();
 			for (String prefix : dataSets.keySet()) {
@@ -328,22 +290,15 @@ public class CompareProtactorScores {
 
 			for (int j = 0; j < RUNS; j++) {
 				HashMap<String, List<Punch>> data = copy(dataSets);
-				HashMap<String, List<Punch>> testData = new HashMap<String, List<Punch>>();
 
 				// train
 				for (String prefix : data.keySet()) {
 					List<Punch> traceList = data.get(prefix);
-					List<Punch> punchesToBeTested = new ArrayList<Punch>();
 
 					for (int i = 0; i < 4; i++) {
 						p3D.addTemplate(traceList.remove(rnd.nextInt(traceList
 								.size())));
 					}
-					for (int i = 0; i < 4; i++) {
-						punchesToBeTested.add(traceList.remove(rnd.nextInt(traceList
-								.size())));
-					}
-					testData.put(prefix, punchesToBeTested);
 				}
 				
 
