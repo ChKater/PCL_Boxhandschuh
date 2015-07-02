@@ -189,7 +189,7 @@ public class Protractor3D {
 				{ qxqx + (1 - qxqx) * c, qx * qy * c1M - qz * s,
 						qx * qz * c1M + qy * s },
 				{ qx * qy * c1M + qz * s, qyqy + (1 - qyqy) * c,
-						qy * qz * c1M - qx * s },
+						qy * qz * c1M - qx * c },
 				{ qx * qz * c1M, qy * qz * c1M + qx * s, qzqz + (1 - qzqz) * c } };
 		return MatrixUtils.createRealMatrix(rData);
 	}
