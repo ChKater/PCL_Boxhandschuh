@@ -17,7 +17,7 @@ import de.luh.hci.pcl.boxhandschuh.model.MeasurePoint;
 import de.luh.hci.pcl.boxhandschuh.model.MeasurePointListener;
 import de.luh.hci.pcl.boxhandschuh.model.MeasurementListener;
 
-public class ArduinoConnection implements SerialPortEventListener {
+public class ArduinoConnection implements SerialPortEventListener, Runnable {
 
 	private static Set<MeasurementListener> measurementListener = new HashSet<>();
 	private static Set<MeasurePointListener> measurePointListener = new HashSet<>();
@@ -41,7 +41,7 @@ public class ArduinoConnection implements SerialPortEventListener {
 	private static ArduinoConnection instance;
 
 	// Constants
-	private static final String PORT = "/dev/cu.usbmodem1d161";
+	private static final String PORT = "/dev/cu.usbmodem621";
 
 	/** Milliseconds to block while waiting for port open */
 	public static final int TIME_OUT = 2000;
@@ -58,6 +58,7 @@ public class ArduinoConnection implements SerialPortEventListener {
 
 	public static void start() {
 		initInstance();
+		new Thread(instance).start();
 	}
 
 	private static void initInstance() {
@@ -134,8 +135,8 @@ public class ArduinoConnection implements SerialPortEventListener {
 			output = serialPort.getOutputStream();
 
 			// add event listeners
-			serialPort.addEventListener(this);
-			serialPort.notifyOnDataAvailable(true);
+//			serialPort.addEventListener(this);
+//			serialPort.notifyOnDataAvailable(true);
 		} catch (Exception e) {
 			System.err.println(e.toString());
 		}
@@ -149,10 +150,11 @@ public class ArduinoConnection implements SerialPortEventListener {
 		if (oEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
 			try {
 				String inputLine = input.readLine();
-				System.out.println(inputLine);
+				// System.out.println(inputLine);
 
 				if (measurementStarted) {
 					if (inputLine.startsWith("ypr")) {
+
 						String[] ypr = inputLine.split(";");
 						gx = Double.parseDouble(ypr[1]);
 						gy = Double.parseDouble(ypr[2]);
@@ -173,7 +175,7 @@ public class ArduinoConnection implements SerialPortEventListener {
 					}
 
 					if (measurementComplete()) {
-						System.out.println("New MeasurePoint");
+						// System.out.println("New MeasurePoint");
 						MeasurePoint mp = new MeasurePoint(new Date(), gx, gy,
 								gz, ax, ay, az, fsr0, fsr1, fsr2, fsr3);
 						for (MeasurePointListener listener : measurePointListener) {
@@ -197,22 +199,80 @@ public class ArduinoConnection implements SerialPortEventListener {
 	}
 
 	private void measurementReset() {
-		gx = -1;
-		gy = -1;
-		gz = -1;
-		ax = -1;
-		ay = -1;
-		az = -1;
-		fsr0 = -1;
-		fsr1 = -1;
-		fsr2 = -1;
-		fsr3 = -1;
+		gx = Double.MIN_NORMAL;
+		gy = Double.MIN_NORMAL;
+		gz = Double.MIN_NORMAL;
+		ax = Double.MIN_NORMAL;
+		ay = Double.MIN_NORMAL;
+		az = Double.MIN_NORMAL;
+		fsr0 = Double.MIN_NORMAL;
+		fsr1 = Double.MIN_NORMAL;
+		fsr2 = Double.MIN_NORMAL;
+		fsr3 = Double.MIN_NORMAL;
 		measurementStarted = false;
 	}
 
 	private boolean measurementComplete() {
-		return gx >= 0 && gy >= 0 && gz >= 0 && ax >= 0 && ay >= 0 && az >= 0
-				&& fsr0 >= 0 && fsr1 >= 0 && fsr2 >= 0 && fsr3 >= 0;
+		return gx != Double.MIN_NORMAL && gy != Double.MIN_NORMAL
+				&& gz != Double.MIN_NORMAL && ax != Double.MIN_NORMAL
+				&& ay != Double.MIN_NORMAL && az != Double.MIN_NORMAL
+				&& fsr0 != Double.MIN_NORMAL && fsr1 != Double.MIN_NORMAL
+				&& fsr2 != Double.MIN_NORMAL && fsr3 != Double.MIN_NORMAL;
+	}
+
+	@Override
+	public void run() {
+
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		while (true) {
+			try {
+				String inputLine = null;
+				while (!(inputLine = input.readLine()).startsWith("euler")) {
+				}
+				// skip Euler
+
+				// ypr
+				inputLine = input.readLine();
+				String[] ypr = inputLine.split(";");
+				double gx = Double.parseDouble(ypr[1]);
+				double gy = Double.parseDouble(ypr[2]);
+				double gz = Double.parseDouble(ypr[3]);
+
+				//areal
+				inputLine = input.readLine();
+				//skip areal
+				
+				// aworld
+				inputLine = input.readLine();
+				String[] aworld = inputLine.split(";");
+				double ax = Double.parseDouble(aworld[1]);
+				double ay = Double.parseDouble(aworld[2]);
+				double az = Double.parseDouble(aworld[3]);
+
+				// fsr
+				inputLine = input.readLine();
+				String[] fsr = inputLine.split(";");
+				double fsr0 = Double.parseDouble(fsr[2]);
+				double fsr1 = Double.parseDouble(fsr[4]);
+				double fsr2 = Double.parseDouble(fsr[6]);
+				double fsr3 = Double.parseDouble(fsr[8]);
+
+				MeasurePoint mp = new MeasurePoint(new Date(), gx, gy, gz, ax,
+						ay, az, fsr0, fsr1, fsr2, fsr3);
+				for (MeasurePointListener listener : measurePointListener) {
+					listener.OnMeasurePoint(mp);
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
 	}
 
 }
