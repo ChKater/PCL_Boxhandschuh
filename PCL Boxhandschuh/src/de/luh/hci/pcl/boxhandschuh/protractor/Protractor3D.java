@@ -57,10 +57,15 @@ public class Protractor3D {
 		}
 		return instance;
 	}
+	
+	public void clear(){
+		templates.clear();
+	}
+	
 
 	public List<Template> templates = new ArrayList<>();
 
-	private Protractor3D() {
+	public Protractor3D() {
 	}
 
 	public void addTemplate(Punch p) {
@@ -267,7 +272,7 @@ public class Protractor3D {
 				mtgyr.transform(p.getMeasurement()), gyrTemplate);
 
 		Map<String, Double> count = new HashMap<>();
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 5; i++) {
 			String idAcc = accResults.get(i).template.getId();
 			double countAcc = 0;
 
