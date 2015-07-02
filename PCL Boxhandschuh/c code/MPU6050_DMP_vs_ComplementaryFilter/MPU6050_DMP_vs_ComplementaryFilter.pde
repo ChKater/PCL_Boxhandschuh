@@ -45,7 +45,8 @@ void setup() {
   String portName = Serial.list()[portIndex];
   //  println(Serial.list());
   //  println(" Connecting to -> " + Serial.list()[portIndex]);
-  myPort = new Serial(this, portName, 57600);
+  portName = "/dev/cu.usbmodem1411";
+  myPort = new Serial(this, portName, 115200);
   myPort.clear();
   myPort.bufferUntil(lf);
 }
