@@ -97,7 +97,7 @@ MPU6050 mpu;
 // from the FIFO. Note this also requires gravity vector calculations.
 // Also note that yaw/pitch/roll angles suffer from gimbal lock (for
 // more info, see: http://en.wikipedia.org/wiki/Gimbal_lock)
-#define OUTPUT_READABLE_YAWPITCHROLL
+//#define OUTPUT_READABLE_YAWPITCHROLL
 
 
 // uncomment "OUTPUT_READABLE_REALACCEL" if you want to see acceleration
@@ -105,7 +105,7 @@ MPU6050 mpu;
 // not compensated for orientation, so +X is always +X according to the
 // sensor, just without the effects of gravity. If you want acceleration
 // compensated for orientation, us OUTPUT_READABLE_WORLDACCEL instead.
-//#define OUTPUT_READABLE_REALACCEL
+#define OUTPUT_READABLE_REALACCEL
 
 // uncomment "OUTPUT_READABLE_WORLDACCEL" if you want to see acceleration
 // components with gravity removed and adjusted for the world frame of
@@ -245,10 +245,10 @@ void setup() {
 // ================================================================
 
 void loop() {
-  float val1 = analogRead(1);
+  float val1 = 0; //analogRead(1);
   float val2 = analogRead(2);
   float val3 = analogRead(3);
-  float val0 = analogRead(0);
+  float val0 = 0; //analogRead(0);
     // if programming failed, don't try to do anything
     if (!dmpReady) return;
 
