@@ -194,7 +194,7 @@ void setup() {
     Wire.begin();
 
     // initialize serial communication
-    Serial.begin(57600);
+    Serial.begin(115200);
     while (!Serial); // wait for Leonardo enumeration, others continue immediately
 
     // NOTE: 8MHz or slower host processors, like the Teensy @ 3.3v or Ardunio
