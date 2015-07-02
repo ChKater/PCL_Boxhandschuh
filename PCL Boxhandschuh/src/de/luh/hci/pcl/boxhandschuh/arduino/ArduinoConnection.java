@@ -41,7 +41,7 @@ public class ArduinoConnection implements SerialPortEventListener {
 	private static ArduinoConnection instance;
 
 	// Constants
-	private static final String PORT = "/dev/cu.usbmodem1d161";
+	private static final String PORT = "/dev/cu.usbmodem621";
 
 	/** Milliseconds to block while waiting for port open */
 	public static final int TIME_OUT = 2000;
@@ -149,10 +149,11 @@ public class ArduinoConnection implements SerialPortEventListener {
 		if (oEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
 			try {
 				String inputLine = input.readLine();
-				System.out.println(inputLine);
+//				System.out.println(inputLine);
 
 				if (measurementStarted) {
 					if (inputLine.startsWith("ypr")) {
+
 						String[] ypr = inputLine.split(";");
 						gx = Double.parseDouble(ypr[1]);
 						gy = Double.parseDouble(ypr[2]);
@@ -173,7 +174,7 @@ public class ArduinoConnection implements SerialPortEventListener {
 					}
 
 					if (measurementComplete()) {
-						System.out.println("New MeasurePoint");
+//						System.out.println("New MeasurePoint");
 						MeasurePoint mp = new MeasurePoint(new Date(), gx, gy,
 								gz, ax, ay, az, fsr0, fsr1, fsr2, fsr3);
 						for (MeasurePointListener listener : measurePointListener) {
@@ -197,22 +198,22 @@ public class ArduinoConnection implements SerialPortEventListener {
 	}
 
 	private void measurementReset() {
-		gx = -1;
-		gy = -1;
-		gz = -1;
-		ax = -1;
-		ay = -1;
-		az = -1;
-		fsr0 = -1;
-		fsr1 = -1;
-		fsr2 = -1;
-		fsr3 = -1;
+		gx = Double.MIN_NORMAL;
+		gy = Double.MIN_NORMAL;
+		gz = Double.MIN_NORMAL;
+		ax = Double.MIN_NORMAL;
+		ay = Double.MIN_NORMAL;
+		az = Double.MIN_NORMAL;
+		fsr0 = Double.MIN_NORMAL;
+		fsr1 = Double.MIN_NORMAL;
+		fsr2 = Double.MIN_NORMAL;
+		fsr3 = Double.MIN_NORMAL;
 		measurementStarted = false;
 	}
 
 	private boolean measurementComplete() {
-		return gx >= 0 && gy >= 0 && gz >= 0 && ax >= 0 && ay >= 0 && az >= 0
-				&& fsr0 >= 0 && fsr1 >= 0 && fsr2 >= 0 && fsr3 >= 0;
+		return gx != Double.MIN_NORMAL && gy != Double.MIN_NORMAL && gz != Double.MIN_NORMAL && ax != Double.MIN_NORMAL && ay != Double.MIN_NORMAL && az != Double.MIN_NORMAL
+				&& fsr0 != Double.MIN_NORMAL && fsr1 != Double.MIN_NORMAL && fsr2 != Double.MIN_NORMAL && fsr3 != Double.MIN_NORMAL;
 	}
 
 }
