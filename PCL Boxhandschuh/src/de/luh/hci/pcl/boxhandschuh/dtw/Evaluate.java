@@ -1,4 +1,4 @@
-package de.luh.hci.pcl.boxhandschuh.protractor;
+package de.luh.hci.pcl.boxhandschuh.dtw;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -68,7 +68,7 @@ public class Evaluate {
 					br.close();
 				}
 			}
-			Protractor3D p3D = Protractor3D.getInstance();
+			
 			Random rnd = new Random();
 			
 			HashMap<String, HashMap<String, Integer>> resultTraj = new HashMap<>();
@@ -80,13 +80,13 @@ public class Evaluate {
 			System.out.println("3d Trajectory");
 
 			for (int j = 0; j < RUNS; j++) {
-				p3D.clear();
+				DTW dtw = new DTW();
 				HashMap<String, List<Punch>> data = copy(dataSets);
 				// train
 				for (String prefix : data.keySet()) {
 					List<Punch> traceList = data.get(prefix);
 					for (int i = 0; i < 4; i++) {
-						p3D.addTemplate(traceList.remove(rnd.nextInt(traceList
+						dtw.addTemplate(traceList.remove(rnd.nextInt(traceList
 								.size())));
 					}
 				}
@@ -97,13 +97,13 @@ public class Evaluate {
 					HashMap<String, Integer> counting = resultTraj.get(prefix);
 					List<Punch> punches = data.get(prefix);
 					for (Punch punch : punches) {
-						Match m = p3D.recognizeByTrajectory(punch);
+						DTWMatch m = dtw.recognizeByTrajectory(punch);
 						int count = 0;
 						try {
-							count = counting.get(m.template.getId());
+							count = counting.get(m.getTemplate().getClassname());
 						} catch (Exception e) {
 						}
-						counting.put(m.template.getId(), count + 1);
+						counting.put(m.getTemplate().getClassname(), count + 1);
 
 					}
 				}
@@ -127,13 +127,13 @@ public class Evaluate {
 			
 
 			for (int j = 0; j < RUNS; j++) {
-				p3D.clear();
+				DTW dtw = new DTW();
 				HashMap<String, List<Punch>> data = copy(dataSets);
 				// train
 				for (String prefix : data.keySet()) {
 					List<Punch> traceList = data.get(prefix);
 					for (int i = 0; i < 4; i++) {
-						p3D.addTemplate(traceList.remove(rnd.nextInt(traceList
+						dtw.addTemplate(traceList.remove(rnd.nextInt(traceList
 								.size())));
 					}
 				}
@@ -144,13 +144,13 @@ public class Evaluate {
 					HashMap<String, Integer> counting = resultAcc.get(prefix);
 					List<Punch> punches = data.get(prefix);
 					for (Punch punch : punches) {
-						Match m = p3D.recognizeByAccelerometer(punch);
+						DTWMatch m = dtw.recognizeByAccelerometer(punch);
 						int count = 0;
 						try {
-							count = counting.get(m.template.getId());
+							count = counting.get(m.getTemplate().getClassname());
 						} catch (Exception e) {
 						}
-						counting.put(m.template.getId(), count + 1);
+						counting.put(m.getTemplate().getClassname(), count + 1);
 
 					}
 				}
@@ -174,13 +174,13 @@ public class Evaluate {
 			
 
 			for (int j = 0; j < RUNS; j++) {
-				p3D.clear();
+				DTW dtw = new DTW();
 				HashMap<String, List<Punch>> data = copy(dataSets);
 				// train
 				for (String prefix : data.keySet()) {
 					List<Punch> traceList = data.get(prefix);
 					for (int i = 0; i < 4; i++) {
-						p3D.addTemplate(traceList.remove(rnd.nextInt(traceList
+						dtw.addTemplate(traceList.remove(rnd.nextInt(traceList
 								.size())));
 					}
 				}
@@ -191,13 +191,13 @@ public class Evaluate {
 					HashMap<String, Integer> counting = resultGyr.get(prefix);
 					List<Punch> punches = data.get(prefix);
 					for (Punch punch : punches) {
-						Match m = p3D.recognizeByGyroskop(punch);
+						DTWMatch m = dtw.recognizeByGyroskop(punch);
 						int count = 0;
 						try {
-							count = counting.get(m.template.getId());
+							count = counting.get(m.getTemplate().getClassname());
 						} catch (Exception e) {
 						}
-						counting.put(m.template.getId(), count + 1);
+						counting.put(m.getTemplate().getClassname(), count + 1);
 
 					}
 				}
@@ -212,7 +212,7 @@ public class Evaluate {
 				}
 			}
 			
-			System.out.println("DCA");
+			System.out.println("AccGYrCombined");
 			HashMap<String, HashMap<String, Integer>> resultDCA = new HashMap<>();
 			for (String prefix : dataSets.keySet()) {
 				resultDCA.put(prefix, new HashMap<>());
@@ -221,13 +221,13 @@ public class Evaluate {
 			
 
 			for (int j = 0; j < RUNS; j++) {
-				p3D.clear();
+				DTW dtw = new DTW();
 				HashMap<String, List<Punch>> data = copy(dataSets);
 				// train
 				for (String prefix : data.keySet()) {
 					List<Punch> traceList = data.get(prefix);
 					for (int i = 0; i < 4; i++) {
-						p3D.addTemplate(traceList.remove(rnd.nextInt(traceList
+						dtw.addTemplate(traceList.remove(rnd.nextInt(traceList
 								.size())));
 					}
 				}
@@ -238,13 +238,13 @@ public class Evaluate {
 					HashMap<String, Integer> counting = resultDCA.get(prefix);
 					List<Punch> punches = data.get(prefix);
 					for (Punch punch : punches) {
-						String m = p3D.recognizeByDCA(punch, 1.0);
+						DTWMatch m = dtw.recognizeByAccGYrCombined(punch);
 						int count = 0;
 						try {
-							count = counting.get(m);
+							count = counting.get(m.getTemplate().getClassname());
 						} catch (Exception e) {
 						}
-						counting.put(m, count + 1);
+						counting.put(m.getTemplate().getClassname(), count + 1);
 
 					}
 				}
@@ -278,6 +278,4 @@ public class Evaluate {
 		}
 		return copy;
 	}
-
-	
 }
