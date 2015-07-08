@@ -41,7 +41,7 @@ public class ArduinoConnection implements SerialPortEventListener, Runnable {
 	private static ArduinoConnection instance;
 
 	// Constants
-	private static final String PORT = "/dev/cu.usbmodem621";
+	private static final String PORT = "/dev/cu.usbmodem1421";
 
 	/** Milliseconds to block while waiting for port open */
 	public static final int TIME_OUT = 2000;
@@ -150,7 +150,7 @@ public class ArduinoConnection implements SerialPortEventListener, Runnable {
 		if (oEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
 			try {
 				String inputLine = input.readLine();
-				// System.out.println(inputLine);
+				 System.out.println(inputLine);
 
 				if (measurementStarted) {
 					if (inputLine.startsWith("ypr")) {
@@ -223,12 +223,7 @@ public class ArduinoConnection implements SerialPortEventListener, Runnable {
 	@Override
 	public void run() {
 
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		
 		while (true) {
 			try {
 				String inputLine = null;
@@ -268,8 +263,7 @@ public class ArduinoConnection implements SerialPortEventListener, Runnable {
 					listener.OnMeasurePoint(mp);
 				}
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
 			}
 		}
 

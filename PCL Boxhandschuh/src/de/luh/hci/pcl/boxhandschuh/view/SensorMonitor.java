@@ -38,7 +38,7 @@ public class SensorMonitor extends GridPane implements MeasurePointListener {
 
 	public SensorMonitor() {
 		init();
-		ArduinoConnection.addMeasurePointListener(this);
+//		ArduinoConnection.addMeasurePointListener(this);
 	}
 
 	public SensorMonitor(Measurement m) {

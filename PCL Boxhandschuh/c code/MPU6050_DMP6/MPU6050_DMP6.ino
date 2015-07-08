@@ -97,7 +97,7 @@ MPU6050 mpu;
 // from the FIFO. Note this also requires gravity vector calculations.
 // Also note that yaw/pitch/roll angles suffer from gimbal lock (for
 // more info, see: http://en.wikipedia.org/wiki/Gimbal_lock)
-//#define OUTPUT_READABLE_YAWPITCHROLL
+#define OUTPUT_READABLE_YAWPITCHROLL
 
 
 // uncomment "OUTPUT_READABLE_REALACCEL" if you want to see acceleration
@@ -205,7 +205,7 @@ void setup() {
     // mpu.setXGyroOffset(220);
     // mpu.setYGyroOffset(76);
     // mpu.setZGyroOffset(-85);
-    // mpu.setZAccelOffset(1788); // 1688 factory default for my test chip
+     mpu.setZAccelOffset(1688); // 1688 factory default for my test chip
 
     // make sure it worked (returns 0 if so)
     if (devStatus == 0) {
