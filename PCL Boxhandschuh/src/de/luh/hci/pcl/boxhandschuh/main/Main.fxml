@@ -9,5 +9,6 @@
   <tabs>
     <Tab fx:id="measurements" text="Messdaten" />
     <Tab fx:id="sensorMonitor" text="Sensor Monitor" />
+     <Tab fx:id="evaluation" text="Gestenerkennung Evaluation" />
   </tabs>
 </TabPane>

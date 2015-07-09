@@ -19,7 +19,7 @@ public class MeasurementView extends TabPane{
 	private static MeasurementToTrace mtgyr = new MeasurementToGyroskopTrace();
 	
 	@FXML
-	private Tab trajectory, accelerometer,gyroskop,sensorvalues;
+	private Tab trajectory, accelerometer,gyroskop,sensorvalues, gesture, measurepoints;
 	
 	private Punch punch;
 	private Plott3D trajectoryPlot;
@@ -47,7 +47,8 @@ public class MeasurementView extends TabPane{
 		gyroskop.setContent(gyroskopPlot);
 		sensorMonitor = new SensorMonitor(punch.getMeasurement());
 		sensorvalues.setContent(sensorMonitor);
-
+		gesture.setContent(new Gesture(punch));
+		measurepoints.setContent(new MeasurePoints(punch));
 
 	}
 	

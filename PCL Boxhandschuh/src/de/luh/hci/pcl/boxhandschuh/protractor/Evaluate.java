@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-import de.luh.hci.pcl.boxhandschuh.io.PunchIO;
 import de.luh.hci.pcl.boxhandschuh.model.MeasurePoint;
 import de.luh.hci.pcl.boxhandschuh.model.Measurement;
 import de.luh.hci.pcl.boxhandschuh.model.Punch;

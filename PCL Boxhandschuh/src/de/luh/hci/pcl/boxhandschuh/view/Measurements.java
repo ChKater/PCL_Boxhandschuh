@@ -21,10 +21,11 @@ import de.luh.hci.pcl.boxhandschuh.io.PunchIO;
 import de.luh.hci.pcl.boxhandschuh.model.MeasurePoint;
 import de.luh.hci.pcl.boxhandschuh.model.MeasurePointListener;
 import de.luh.hci.pcl.boxhandschuh.model.Measurement;
+import de.luh.hci.pcl.boxhandschuh.model.MeasurementListener;
 import de.luh.hci.pcl.boxhandschuh.model.Punch;
 import de.luh.hci.pcl.boxhandschuh.transformation.MeasurementTo3dTrajectory;
 
-public class Measurements extends SplitPane implements MeasurePointListener {
+public class Measurements extends SplitPane implements MeasurePointListener, MeasurementListener {
 
 	@FXML
 	private Button measure;
@@ -77,6 +78,7 @@ public class Measurements extends SplitPane implements MeasurePointListener {
 				});
 		readData();
 		ArduinoConnection.addMeasurePointListener(this);
+		ArduinoConnection.addMeasurementListener(this);
 
 	}
 
@@ -117,6 +119,15 @@ public class Measurements extends SplitPane implements MeasurePointListener {
 		if (measurementRunning) {
 			m.getMeasurement().add(measurePoint);
 		}
+	}
+
+	@Override
+	public void onMeasurement(Measurement measurement) {
+		Punch punch = new Punch(measurement, mto3dt.transform(measurement),
+				classSelect.getSelectionModel().getSelectedItem(), person
+						.getText());
+		PunchIO.savePunch(punch);
+		punches.add(punch);
 	}
 
 	

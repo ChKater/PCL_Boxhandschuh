@@ -14,7 +14,7 @@ public class Main extends Application {
 	public void start(Stage primaryStage) {
 		
 		try {
-			ArduinoConnection.start();
+//			ArduinoConnection.start();
 			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(
 					"Main.fxml"));
 			Parent root = fxmlLoader.load();
