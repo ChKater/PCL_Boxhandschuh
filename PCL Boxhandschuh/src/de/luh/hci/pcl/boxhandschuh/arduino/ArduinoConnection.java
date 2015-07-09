@@ -8,16 +8,22 @@ import gnu.io.SerialPortEventListener;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import de.luh.hci.pcl.boxhandschuh.model.MeasurePoint;
 import de.luh.hci.pcl.boxhandschuh.model.MeasurePointListener;
+import de.luh.hci.pcl.boxhandschuh.model.Measurement;
 import de.luh.hci.pcl.boxhandschuh.model.MeasurementListener;
 
-public class ArduinoConnection implements SerialPortEventListener, Runnable {
+public class ArduinoConnection implements SerialPortEventListener, Runnable, MeasurePointListener {
 
 	private static Set<MeasurementListener> measurementListener = new HashSet<>();
 	private static Set<MeasurePointListener> measurePointListener = new HashSet<>();
@@ -267,6 +273,49 @@ public class ArduinoConnection implements SerialPortEventListener, Runnable {
 			}
 		}
 
+	}
+
+	private Queue<MeasurePoint> history = new LinkedBlockingQueue<>(10);
+	
+	private final int BORDER = 50000;
+	private final int MIN_MEASUREPOINTS = 40;
+	private List<MeasurePoint> points = new ArrayList<>();
+	private boolean collecting = false;
+	@Override
+	public void OnMeasurePoint(MeasurePoint measurePoint) {
+		double sumFromHistory = getAccelerationSumFromHistory();
+		if(sumFromHistory > BORDER && !collecting){
+			collecting = true;
+			Iterator<MeasurePoint> iterator = history.iterator();
+			while(iterator.hasNext()){
+				MeasurePoint point = iterator.next();
+				points.add(point);
+			}
+		} else if(sumFromHistory <= BORDER){
+			collecting = false;
+			if(points.size() >= MIN_MEASUREPOINTS){
+				Measurement m = new Measurement();
+				m.setMeasurement(points);
+				for (MeasurementListener listener : measurementListener) {
+					listener.onMeasurement(m);
+				}
+			}
+			points = new ArrayList<>();
+		}
+		history.add(measurePoint);
+		if(collecting){
+			points.add(measurePoint);
+		}
+	}
+	
+	private double getAccelerationSumFromHistory(){
+		double sum = 0.0;
+		Iterator<MeasurePoint> iterator = history.iterator();
+		while(iterator.hasNext()){
+			MeasurePoint point = iterator.next();
+			sum += Math.abs(point.getAx()) + Math.abs(point.getAy()) + Math.abs(point.getAz());
+		}
+		return sum;
 	}
 
 }
