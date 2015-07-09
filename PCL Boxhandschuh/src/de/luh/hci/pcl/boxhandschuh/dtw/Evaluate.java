@@ -118,7 +118,7 @@ public class Evaluate {
 				}
 			}
 			
-			System.out.println("Acc");
+			System.out.println("\nAcc");
 			HashMap<String, HashMap<String, Integer>> resultAcc = new HashMap<>();
 			for (String prefix : dataSets.keySet()) {
 				resultAcc.put(prefix, new HashMap<>());
@@ -165,7 +165,7 @@ public class Evaluate {
 				}
 			}
 			
-			System.out.println("Gyr");
+			System.out.println("\nGyr");
 			HashMap<String, HashMap<String, Integer>> resultGyr = new HashMap<>();
 			for (String prefix : dataSets.keySet()) {
 				resultGyr.put(prefix, new HashMap<>());
@@ -212,7 +212,7 @@ public class Evaluate {
 				}
 			}
 			
-			System.out.println("AccGYrCombined");
+			System.out.println("\nAccGYrCombined");
 			HashMap<String, HashMap<String, Integer>> resultDCA = new HashMap<>();
 			for (String prefix : dataSets.keySet()) {
 				resultDCA.put(prefix, new HashMap<>());

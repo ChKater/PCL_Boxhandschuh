@@ -6,6 +6,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 
 import org.jzy3d.chart.AWTChart;
+import org.jzy3d.chart.controllers.keyboard.camera.AWTCameraKeyController;
 import org.jzy3d.colors.Color;
 import org.jzy3d.javafx.JavaFXChartFactory;
 import org.jzy3d.maths.Coord3d;
@@ -47,16 +48,14 @@ public class Plott3D extends GridPane {
 		sls.setDisplayed(true);
 		chart.getScene().getGraph().add(sls);
 		Coord3d prev = scatter.getData()[1];
+		LineStrip ls = new LineStrip();
+		ls.add(new Point(prev, color));
 		for (int i = 2; i < scatter.getData().length; i++) {
 			Coord3d cur = scatter.getData()[i];
-			LineStrip ls = new LineStrip();
-
-			ls.add(new Point(prev, color));
 			ls.add(new Point(cur, color));
-			ls.setDisplayed(true);
-			prev = cur;
-			chart.getScene().getGraph().add(ls);
 		}
+		ls.setDisplayed(true);
+		chart.getScene().getGraph().add(ls);
 		ImageView imageView1 = factory.bindImageView(chart);
 		getChildren().clear();
 		add(imageView1, 0, 0);
