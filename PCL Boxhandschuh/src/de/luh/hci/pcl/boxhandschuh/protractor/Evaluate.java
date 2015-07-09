@@ -78,6 +78,7 @@ public class Evaluate {
 			}
 			
 			int RUNS = 100;
+			System.out.println();
 			System.out.println("3d Trajectory");
 
 			for (int j = 0; j < RUNS; j++) {
@@ -119,6 +120,7 @@ public class Evaluate {
 				}
 			}
 			
+			System.out.println();
 			System.out.println("Acc");
 			HashMap<String, HashMap<String, Integer>> resultAcc = new HashMap<>();
 			for (String prefix : dataSets.keySet()) {
@@ -166,6 +168,7 @@ public class Evaluate {
 				}
 			}
 			
+			System.out.println();
 			System.out.println("Gyr");
 			HashMap<String, HashMap<String, Integer>> resultGyr = new HashMap<>();
 			for (String prefix : dataSets.keySet()) {
@@ -213,6 +216,7 @@ public class Evaluate {
 				}
 			}
 			
+			System.out.println();
 			System.out.println("DCA");
 			HashMap<String, HashMap<String, Integer>> resultDCA = new HashMap<>();
 			for (String prefix : dataSets.keySet()) {
