@@ -27,7 +27,7 @@
           <NumberAxis autoRanging="false" forceZeroInRange="false" label="time t" minorTickVisible="false" side="BOTTOM" tickLabelsVisible="false" tickMarkVisible="false" />
         </xAxis>
         <yAxis>
-          <NumberAxis side="LEFT" />
+          <NumberAxis autoRanging="false" lowerBound="-30000.0" minorTickCount="500" side="LEFT" tickUnit="10000.0" upperBound="30000.0" />
         </yAxis>
       </LineChart>
       <LineChart fx:id="gyr" createSymbols="false" verticalGridLinesVisible="false" GridPane.rowIndex="3">
@@ -35,7 +35,7 @@
           <NumberAxis autoRanging="false" forceZeroInRange="false" label="time t" minorTickVisible="false" side="BOTTOM" tickLabelsVisible="false" tickMarkVisible="false" />
         </xAxis>
         <yAxis>
-          <NumberAxis side="LEFT" />
+          <NumberAxis autoRanging="false" lowerBound="-250.0" side="LEFT" tickUnit="100.0" upperBound="250.0" />
         </yAxis>
       </LineChart>
       <Label text="FSR" GridPane.rowIndex="4" />
@@ -44,7 +44,7 @@
             <NumberAxis autoRanging="false" forceZeroInRange="false" label="time t" minorTickVisible="false" side="BOTTOM" tickLabelsVisible="false" tickMarkVisible="false" />
          </xAxis>
          <yAxis>
-            <NumberAxis side="LEFT" />
+            <NumberAxis autoRanging="false" minorTickCount="50" side="LEFT" tickUnit="200.0" upperBound="1000.0" />
          </yAxis>
       </LineChart>
    </children>

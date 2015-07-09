@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.cell.*?>
+
+<fx:root maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="400.0" type="GridPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+	<columnConstraints>
+		<ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
+	</columnConstraints>
+	<rowConstraints>
+		<RowConstraints maxHeight="30.0" minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+		<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
+	</rowConstraints>
+	<children>
+		<Label text="Datenpunkte" />
+		<TableView fx:id="data" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+			<columns>
+				<TableColumn minWidth="150.0" prefWidth="150.0" text="Zeitpunkt">
+					<cellValueFactory>
+						<PropertyValueFactory property="date" />
+					</cellValueFactory>
+				</TableColumn>
+				<TableColumn minWidth="225.0" prefWidth="225.0" text="Accelerometer">
+					<columns>
+						<TableColumn minWidth="75.0" prefWidth="75.0" text="X">
+							<cellValueFactory>
+								<PropertyValueFactory property="ax" />
+							</cellValueFactory>
+						</TableColumn>
+						<TableColumn minWidth="75.0" prefWidth="75.0" text="Y">
+							<cellValueFactory>
+								<PropertyValueFactory property="ay" />
+							</cellValueFactory>
+						</TableColumn>
+						<TableColumn minWidth="75.0" prefWidth="75.0" text="Z">
+							<cellValueFactory>
+								<PropertyValueFactory property="az" />
+							</cellValueFactory>
+						</TableColumn>
+					</columns>
+				</TableColumn>
+				<TableColumn minWidth="225.0" prefWidth="225.0" text="Gyroskop">
+					<columns>
+						<TableColumn minWidth="75.0" prefWidth="75.0" text="X">
+							<cellValueFactory>
+								<PropertyValueFactory property="gx" />
+							</cellValueFactory>
+						</TableColumn>
+						<TableColumn minWidth="75.0" prefWidth="75.0" text="Y">
+							<cellValueFactory>
+								<PropertyValueFactory property="gy" />
+							</cellValueFactory>
+						</TableColumn>
+						<TableColumn minWidth="75.0" prefWidth="75.0" text="Z">
+							<cellValueFactory>
+								<PropertyValueFactory property="gz" />
+							</cellValueFactory>
+						</TableColumn>
+					</columns>
+				</TableColumn>
+				<TableColumn minWidth="300.0" prefWidth="300.0" text="FSR">
+					<columns>
+						<TableColumn minWidth="75.0" prefWidth="75.0" text="0">
+							<cellValueFactory>
+								<PropertyValueFactory property="fsr0" />
+							</cellValueFactory>
+						</TableColumn>
+						<TableColumn minWidth="75.0" prefWidth="75.0" text="1">
+							<cellValueFactory>
+								<PropertyValueFactory property="fsr1" />
+							</cellValueFactory>
+						</TableColumn>
+						<TableColumn minWidth="75.0" prefWidth="75.0" text="2">
+							<cellValueFactory>
+								<PropertyValueFactory property="fsr2" />
+							</cellValueFactory>
+						</TableColumn>
+						<TableColumn minWidth="75.0" prefWidth="75.0" text="3">
+							<cellValueFactory>
+								<PropertyValueFactory property="fsr3" />
+							</cellValueFactory>
+						</TableColumn>
+					</columns>
+				</TableColumn>
+			</columns>
+			<GridPane.margin>
+				<Insets top="10.0" />
+			</GridPane.margin>
+		</TableView>
+	</children>
+	<padding>
+		<Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+	</padding>
+</fx:root>

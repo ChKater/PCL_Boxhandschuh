@@ -5,14 +5,17 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<fx:root maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-	prefHeight="600.0" prefWidth="800.0" side="RIGHT" tabClosingPolicy="UNAVAILABLE"
-	type="TabPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="600.0" prefWidth="800.0" side="RIGHT" tabClosingPolicy="UNAVAILABLE" type="TabPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
 	<tabs>
 		<Tab fx:id="trajectory" text="3D Trajectory" />
 		<Tab fx:id="accelerometer" text="Accelerometer" />
 		<Tab fx:id="gyroskop" text="Gyroskop" />
-		<Tab fx:id="sensorvalues" text="Sensorwerte" />
 		<Tab fx:id="gesture" text="Gestenerkennung" />
+		<Tab fx:id="sensorvalues" text="Sensorwerte" />
+      <Tab fx:id="measurepoints" text="Messdaten">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+        </content>
+      </Tab>
 	</tabs>
 </fx:root>
