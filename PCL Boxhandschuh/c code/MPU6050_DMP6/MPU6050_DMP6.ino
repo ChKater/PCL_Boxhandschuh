@@ -245,9 +245,9 @@ void setup() {
 // ================================================================
 
 void loop() {
-  float val1 = 0; //analogRead(1);
+  float val1 = 0;//analogRead(1);
   float val2 = analogRead(2);
-  float val3 = analogRead(3);
+  float val3 = 0; //analogRead(3);
   float val0 = 0; //analogRead(0);
     // if programming failed, don't try to do anything
     if (!dmpReady) return;
