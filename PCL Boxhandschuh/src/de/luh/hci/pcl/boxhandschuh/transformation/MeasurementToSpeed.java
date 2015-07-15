@@ -16,19 +16,19 @@ public class MeasurementToSpeed implements MeasurementToTrace {
         Date lastTimeStamp = m.getStart();
         List<Point3D> speedTrace = new ArrayList<>();
         
-        for (int i = 0; i < m.getMeasurement().size(); i++) {
-            MeasurePoint current = m.getMeasurement().get(i);
-            Date currentTimeStamp = current.getDate();
-            double dt = MeasurementTo3dTrajectory.secondsBetweeen(lastTimeStamp, currentTimeStamp);
-            lastTimeStamp = currentTimeStamp;
-            Point3D acceleration = new Point3D(current.getAx() * MeasurementTo3dTrajectory.factor, current.getAy() * MeasurementTo3dTrajectory.factor, current.getAz() * MeasurementTo3dTrajectory.factor);
-            
-            velocity.x = velocity.x * acceleration.x * dt;
-            velocity.y = velocity.y * acceleration.y * dt;
-            velocity.z = velocity.z * acceleration.z * dt;
-            
-            speedTrace.add(velocity.copy());
-        }
+//        for (int i = 0; i < m.getMeasurement().size(); i++) {
+//            MeasurePoint current = m.getMeasurement().get(i);
+//            Date currentTimeStamp = current.getDate();
+////            double dt = MeasurementTo3dTrajectory.secondsBetweeen(lastTimeStamp, currentTimeStamp);
+//            lastTimeStamp = currentTimeStamp;
+////            Point3D acceleration = new Point3D(current.getAx() * MeasurementTo3dTrajectory.factor, current.getAy() * MeasurementTo3dTrajectory.factor, current.getAz() * MeasurementTo3dTrajectory.factor);
+//            
+//            velocity.x = velocity.x * acceleration.x * dt;
+//            velocity.y = velocity.y * acceleration.y * dt;
+//            velocity.z = velocity.z * acceleration.z * dt;
+//            
+//            speedTrace.add(velocity.copy());
+//        }
         
         return speedTrace;
     }

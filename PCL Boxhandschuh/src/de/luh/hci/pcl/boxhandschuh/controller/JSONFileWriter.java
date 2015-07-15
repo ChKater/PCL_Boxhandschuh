@@ -50,15 +50,13 @@ public class JSONFileWriter {
                 sb.append(line);
                 sb.append("\n");
             }
-            
+            System.out.println(sb.toString());
             return gson.fromJson(sb.toString(), c);
             
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            
-            e.printStackTrace();
+            return null;
+
         }
-        return null;
 
     }
 

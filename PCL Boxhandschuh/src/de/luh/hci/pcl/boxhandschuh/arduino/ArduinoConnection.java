@@ -18,6 +18,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import de.luh.hci.pcl.boxhandschuh.model.GestureListener;
 import de.luh.hci.pcl.boxhandschuh.model.MeasurePoint;
 import de.luh.hci.pcl.boxhandschuh.model.MeasurePointListener;
 import de.luh.hci.pcl.boxhandschuh.model.Measurement;
@@ -43,6 +44,9 @@ public class ArduinoConnection implements SerialPortEventListener, Runnable, Mea
 	public static void removeMeasurePointListener(MeasurePointListener listener) {
 		measurePointListener.remove(listener);
 	}
+	
+
+
 
 	private static ArduinoConnection instance;
 

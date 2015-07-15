@@ -4,11 +4,14 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import de.luh.hci.pcl.boxhandschuh.protractor.Point3D;
+import de.luh.hci.pcl.boxhandschuh.transformation.MeasurementTo3dTrajectory;
 
 public class Punch {
 
 	private static final SimpleDateFormat sdf = new SimpleDateFormat(
 			"dd.MM.yyyy HH:mm:ss:S");	
+	
+	private static final MeasurementTo3dTrajectory mt3d = new MeasurementTo3dTrajectory();
 	private Measurement measurement;
 	private List<Point3D> trace;
 	private String className;
@@ -53,6 +56,14 @@ public class Punch {
 		this.trace = trace;
 		this.className = className;
 		this.person = person;
+	}
+	
+	public Punch(Measurement measurement) {
+		super();
+		this.measurement = measurement;
+		this.trace = mt3d.transform(measurement);
+		this.className = "unknown";
+		this.person = "unknown";
 	}
 	
 	@Override

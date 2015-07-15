@@ -22,4 +22,8 @@ public class Combination {
         this.gestures = gestures;
     }
     
+    @Override
+    public String toString() {
+    	return getName();
+    }
 }

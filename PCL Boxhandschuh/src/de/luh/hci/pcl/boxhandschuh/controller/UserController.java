@@ -1,81 +1,94 @@
 package de.luh.hci.pcl.boxhandschuh.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import de.luh.hci.pcl.boxhandschuh.model.Award;
 import de.luh.hci.pcl.boxhandschuh.model.User;
+import de.luh.hci.pcl.boxhandschuh.model.UserPojo;
+import de.luh.hci.pcl.boxhandschuh.trainingapplication.view.Main;
 
 public class UserController {
 
-    private static String basePath = "data/users/";
+	private static String basePath = "users/";
 
-    private User activeUser;
+	
 
-    private JSONFileWriter fileWriter;
+	public User getActiveUser() {
+		return activeUser;
+	}
 
-    private Boolean speedAward = false;
+	private User activeUser;
 
-    private Boolean forceAward = false;
+	private JSONFileWriter fileWriter;
 
-    public UserController() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
+	public UserController() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
-    public void login(String username) {
-        fileWriter = new JSONFileWriter(basePath + username);
+	public void login(String username) {
+		fileWriter = new JSONFileWriter(basePath + username);
 
-        try {
-            activeUser = (User) fileWriter.read(User.class);
+		UserPojo pojo = (UserPojo) fileWriter.read(UserPojo.class);
+		
+		if (pojo == null) {
+			pojo = new UserPojo(username);
+			activeUser = new User(pojo);
+			saveUser();
+		} else {
+			activeUser = new User(pojo);
+		}
 
-            if (activeUser == null) {
-                throw new Exception("no user saved!");
-            }
+	}
 
-        } catch (Exception e) {
-            // TODO: handle exception
-            User newUSer = new User(username);
-            activeUser = newUSer;
-            saveUser();
-        }
+	public void saveUser() {
+		if (activeUser != null) {
+			fileWriter = new JSONFileWriter(basePath + activeUser.getUsername());
+			fileWriter.write(activeUser.getPojo());
+		}
+	}
 
-    }
+	public void logout() {
+		saveUser();
+		activeUser = null;
+	}
 
-    public void saveUser() {
-        if (activeUser != null) {
-            fileWriter = new JSONFileWriter(basePath + activeUser.getUsername());
-            fileWriter.write(activeUser);
-        }
-    }
+	public void checkSpeed(double speed) {
+		if (activeUser != null) {
+			if (activeUser.getMaxSpeed() < speed) {
+				activeUser.setMaxSpeed(speed);
+			}
+		}
+	}
 
-    public void logout() {
-        saveUser();
-        activeUser = null;
-        forceAward = false;
-        speedAward = false;
-    }
+	public void checkForce(double force) {
+		if (activeUser != null) {
+			if (activeUser.getMaxForce() < force) {
+				activeUser.setMaxForce(force);
+			}
+		}
+	}
 
-    public void checkSpeed(double speed) {
-        if (activeUser != null) {
-            if (activeUser.getMaxSpeed() < speed) {
-                activeUser.setMaxSpeed(speed);
-                speedAward = true;
-            }
-        }
-    }
+	public void addPunch(int points, double maxSpeed, double maxForce) {
+		checkSpeed(maxSpeed);
+		checkForce(maxForce);
+		activeUser.setPunchCount(activeUser.getPunchCount() + 1);
+		activeUser.setPoints(activeUser.getPoints() + points);
+		checkAward();
+	}
 
-    public void checkForce(double force) {
-        if (activeUser != null) {
-            if (activeUser.getMaxForce() < force) {
-                activeUser.setMaxForce(force);
-                forceAward = true;
-            }
-        }
-    }
+	public void combinationComplete() {
+		activeUser.setCombinationCount(activeUser.getCombinationCount() + 1);
+		checkAward();
+		saveUser();
+	}
 
-    public Boolean getSpeedAward() {
-        return speedAward;
-    }
-
-    public Boolean getForceAward() {
-        return forceAward;
-    }
-
+	public void checkAward() {
+		for (Award award : Main.awards) {
+			if (award.conditionsFullfilled(activeUser)) {
+				activeUser.addAward(award);
+			}
+		}
+	}
 }
