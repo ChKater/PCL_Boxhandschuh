@@ -9,7 +9,7 @@ import de.luh.hci.pcl.boxhandschuh.model.Measurement;
 import de.luh.hci.pcl.boxhandschuh.protractor.Point3D;
 
 public class MeasurementTo3dTrajectory implements MeasurementToTrace{
-
+    public static double factor = 9.8 / 16384;
 	
 	public List<Point3D> transform(Measurement m){
 		Point3D position = new Point3D(0, 0, 0);
@@ -23,7 +23,7 @@ public class MeasurementTo3dTrajectory implements MeasurementToTrace{
 			double dt = secondsBetweeen(lastTimeStamp, currentTimeStamp);
 			lastTimeStamp = currentTimeStamp;
 			double dtdt = dt * dt;
-			double factor = 9.8 / 16384;
+			
 			Point3D acceleration = new Point3D(current.getAx() * factor, current.getAy() * factor, current.getAz() * factor);
 			position.x = position.x + velocity.x * dt + 0.5 * acceleration.x * dtdt;
 			position.y = position.y + velocity.y * dt + 0.5 * acceleration.y * dtdt;
@@ -40,9 +40,8 @@ public class MeasurementTo3dTrajectory implements MeasurementToTrace{
 	}
 	
 	
-	public double secondsBetweeen(Date d1, Date d2){
+	public static double secondsBetweeen(Date d1, Date d2){
 		return ((double) (d2.getTime() - d1.getTime())) / 1000;
 	}
-	
 	
 }

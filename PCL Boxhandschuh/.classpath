@@ -12,9 +12,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<!--
-	<classpathentry kind="lib" path="/home/jakub/sketchbook/comm.jar"/>
-	<classpathentry kind="lib" path="/home/jakub/Downloads/commapi/docs"/>
-	-->
+	<classpathentry kind="lib" path="libs/fastdtw.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
