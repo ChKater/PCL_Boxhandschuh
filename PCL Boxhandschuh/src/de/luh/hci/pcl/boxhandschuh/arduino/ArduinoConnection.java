@@ -13,11 +13,13 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import de.luh.hci.pcl.boxhandschuh.model.GestureListener;
 import de.luh.hci.pcl.boxhandschuh.model.MeasurePoint;
 import de.luh.hci.pcl.boxhandschuh.model.MeasurePointListener;
 import de.luh.hci.pcl.boxhandschuh.model.Measurement;
@@ -25,8 +27,8 @@ import de.luh.hci.pcl.boxhandschuh.model.MeasurementListener;
 
 public class ArduinoConnection implements SerialPortEventListener, Runnable, MeasurePointListener {
 
-	private static Set<MeasurementListener> measurementListener = new HashSet<>();
-	private static Set<MeasurePointListener> measurePointListener = new HashSet<>();
+	private static List<MeasurementListener> measurementListener = new ArrayList<>();
+	private static List<MeasurePointListener> measurePointListener = new ArrayList<>();
 
 	public static void addMeasurementListener(MeasurementListener listener) {
 		measurementListener.add(listener);
@@ -43,6 +45,9 @@ public class ArduinoConnection implements SerialPortEventListener, Runnable, Mea
 	public static void removeMeasurePointListener(MeasurePointListener listener) {
 		measurePointListener.remove(listener);
 	}
+	
+
+
 
 	private static ArduinoConnection instance;
 
@@ -87,6 +92,7 @@ public class ArduinoConnection implements SerialPortEventListener, Runnable, Mea
 
 	private ArduinoConnection() {
 		initialize();
+		addMeasurePointListener(this);
 
 	}
 
@@ -269,21 +275,23 @@ public class ArduinoConnection implements SerialPortEventListener, Runnable, Mea
 					listener.OnMeasurePoint(mp);
 				}
 			} catch (Exception e) {
-				
+				e.printStackTrace();
+//				System.exit(1);
 			}
 		}
 
 	}
 
-	private Queue<MeasurePoint> history = new LinkedBlockingQueue<>(10);
+	private List<MeasurePoint> history = new LinkedList<>();
 	
-	private final int BORDER = 50000;
-	private final int MIN_MEASUREPOINTS = 40;
+	private final int BORDER = 200000;
+	private final int MIN_MEASUREPOINTS = 30;
 	private List<MeasurePoint> points = new ArrayList<>();
 	private boolean collecting = false;
 	@Override
 	public void OnMeasurePoint(MeasurePoint measurePoint) {
 		double sumFromHistory = getAccelerationSumFromHistory();
+//		System.out.println(sumFromHistory);
 		if(sumFromHistory > BORDER && !collecting){
 			collecting = true;
 			Iterator<MeasurePoint> iterator = history.iterator();
@@ -294,16 +302,23 @@ public class ArduinoConnection implements SerialPortEventListener, Runnable, Mea
 		} else if(sumFromHistory <= BORDER){
 			collecting = false;
 			if(points.size() >= MIN_MEASUREPOINTS){
+		         System.out.println("size: " + points.size());
+
 				Measurement m = new Measurement();
 				m.setMeasurement(points);
 				for (MeasurementListener listener : measurementListener) {
 					listener.onMeasurement(m);
 				}
+				
 			}
 			points = new ArrayList<>();
 		}
 		history.add(measurePoint);
+		if(history.size() >= 20){
+		    history.remove(0);
+		}
 		if(collecting){
+		    System.out.println(sumFromHistory);
 			points.add(measurePoint);
 		}
 	}

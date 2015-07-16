@@ -29,9 +29,9 @@ public class MeasurementTo3dTrajectory implements MeasurementToTrace{
 			position.y = position.y + velocity.y * dt + 0.5 * acceleration.y * dtdt;
 			position.z = position.z + velocity.z * dt + 0.5 * acceleration.z * dtdt;
 			
-			velocity.x = velocity.x * acceleration.x * dt;
-			velocity.y = velocity.y * acceleration.y * dt;
-			velocity.z = velocity.z * acceleration.z * dt;
+			velocity.x = velocity.x + acceleration.x * dt;
+			velocity.y = velocity.y + acceleration.y * dt;
+			velocity.z = velocity.z + acceleration.z * dt;
 			
 			trace.add(position.copy());
 		}

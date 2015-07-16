@@ -14,4 +14,9 @@ public class Point3D {
 	public Point3D copy(){
 		return new Point3D(x, y, z);
 	}
+	
+	@Override
+	public String toString() {
+	    return "(" + x +", " + y + ", " +z + ")";
+	}
 }

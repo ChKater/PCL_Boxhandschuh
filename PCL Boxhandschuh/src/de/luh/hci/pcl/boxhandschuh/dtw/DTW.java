@@ -18,121 +18,153 @@ import de.luh.hci.pcl.boxhandschuh.transformation.MeasurementTo3dTrajectory;
 
 public class DTW {
 
-	private static Function<DTWTemplate, TimeSeries> accGyrCombinedTemplate = x -> {
-		return x.getAccGyrCombined();
-	};
+    private static Function<DTWTemplate, TimeSeries> accGyrCombinedTemplate = x -> {
+        return x.getAccGyrCombined();
+    };
 
-	private static Function<DTWTemplate, TimeSeries> accTemplate = x -> {
-		return x.getAccelerometer();
-	};
+    private static Function<DTWTemplate, TimeSeries> accTemplate = x -> {
+        return x.getAccelerometer();
+    };
 
-	private static Function<DTWTemplate, TimeSeries> gyrTemplate = x -> {
-		return x.getGyroscop();
-	};
-	private static Function<DTWTemplate, TimeSeries> trajTemplate = x -> {
-		return x.getTrajectory();
-	};
-	
-	private List<DTWTemplate> dtwTemplates = new ArrayList<>();
+    private static Function<DTWTemplate, TimeSeries> gyrTemplate = x -> {
+        return x.getGyroscop();
+    };
+    private static Function<DTWTemplate, TimeSeries> trajTemplate = x -> {
+        return x.getTrajectory();
+    };
 
-	DistanceFunction distFn = DistanceFunctionFactory.getDistFnByName("EuclideanDistance");
-	
-	private DTWMatch _recognize(TimeSeries punch,
-			Function<DTWTemplate, TimeSeries> sensor) {
-		
-		double minDistance = Double.MAX_VALUE;
-		DTWTemplate minTemplate = null;
-		for (DTWTemplate template : dtwTemplates) {
-			TimeWarpInfo info = FastDTW.getWarpInfoBetween(punch, sensor.apply(template), 30, distFn);
-			if(info.getDistance() < minDistance){
-				minDistance = info.getDistance();
-				minTemplate = template;
-			}
-		}
-		return new DTWMatch(minDistance, minTemplate);
-	}
+    private List<DTWTemplate> dtwTemplates = new ArrayList<>();
 
-	public void addTemplate(Punch punch) {
-		DTWTemplate template = new DTWTemplate(punchToAccTimeSeries(punch),
-				punchToGyrTimeSeries(punch),
-				punchToAccGYrCombinedTimeSeries(punch),
-				punchToTrajTimeSeries(punch), punch.getClassName());
-		dtwTemplates.add(template);
-	}
+    DistanceFunction distFn = DistanceFunctionFactory.getDistFnByName("EuclideanDistance");
 
-	private TimeSeries punchToAccGYrCombinedTimeSeries(Punch p) {
-		TimeSeries timeseries = new TimeSeries(6);
-		long start = p.getMeasurement().getStart().getTime();
-		for (int i = 0; i < p.getMeasurement().getMeasurement().size(); i++) {
-			MeasurePoint point = p.getMeasurement().getMeasurement().get(i);
-			timeseries.addLast(
-					point.getDate().getTime() - start,
-					new TimeSeriesPoint(new double[] { point.getAx(),
-							point.getAy(), point.getAz(), point.getGx(),
-							point.getGy(), point.getGz() }));
-		}
-		return timeseries;
-	}
+    private DTWMatch _recognize(TimeSeries punch, Function<DTWTemplate, TimeSeries> sensor) {
 
-	private TimeSeries punchToAccTimeSeries(Punch p) {
-		TimeSeries timeseries = new TimeSeries(3);
-		long start = p.getMeasurement().getStart().getTime();
-		for (int i = 0; i < p.getMeasurement().getMeasurement().size(); i++) {
-			MeasurePoint point = p.getMeasurement().getMeasurement().get(i);
-			timeseries.addLast(
-					point.getDate().getTime() - start,
-					new TimeSeriesPoint(new double[] { point.getAx(),
-							point.getAy(), point.getAz() }));
-		}
-		return timeseries;
-	}
+        double minDistance = Double.MAX_VALUE;
+        DTWTemplate minTemplate = null;
+        for (DTWTemplate template : dtwTemplates) {
+            TimeWarpInfo info = FastDTW.getWarpInfoBetween(punch, sensor.apply(template), 30, distFn);
+            if (info.getDistance() < minDistance) {
+                minDistance = info.getDistance();
+                minTemplate = template;
+            }
+        }
+        return new DTWMatch(minDistance, minTemplate);
+    }
 
-	private TimeSeries punchToGyrTimeSeries(Punch p) {
-		TimeSeries timeseries = new TimeSeries(3);
-		long start = p.getMeasurement().getStart().getTime();
-		for (int i = 0; i < p.getMeasurement().getMeasurement().size(); i++) {
-			MeasurePoint point = p.getMeasurement().getMeasurement().get(i);
-			timeseries.addLast(
-					point.getDate().getTime() - start,
-					new TimeSeriesPoint(new double[] {point.getGx(),
-							point.getGy(), point.getGz() }));
-		}
-		return timeseries;
-	}
+    public void addTemplate(Punch punch) {
+        DTWTemplate template = new DTWTemplate(punchToAccTimeSeries(punch), punchToGyrTimeSeries(punch), punchToAccGYrCombinedTimeSeries(punch), punchToTrajTimeSeries(punch), punch.getClassName());
+        dtwTemplates.add(template);
+    }
 
-	private MeasurementTo3dTrajectory m3dtr = new MeasurementTo3dTrajectory();
-	
-	private TimeSeries punchToTrajTimeSeries(Punch p) {
-		List<MeasurePoint> measurepPoints = p.getMeasurement().getMeasurement();
-		List<Point3D> trajectory = m3dtr.transform(p.getMeasurement());
-		TimeSeries timeseries = new TimeSeries(3);
-		long start = p.getMeasurement().getStart().getTime();
-		for (int i = 0; i < measurepPoints.size(); i++) {
-			MeasurePoint point = measurepPoints.get(i);
-			Point3D point3D = trajectory.get(i);
-			timeseries.addLast(
-					point.getDate().getTime() - start,
-					new TimeSeriesPoint(new double[] {point3D.x,
-							point3D.y, point3D.z}));
-		}
-		return timeseries;
-	}
+    private TimeSeries punchToAccGYrCombinedTimeSeries(Punch p) {
+        TimeSeries timeseries = new TimeSeries(6);
+        long start = p.getMeasurement().getStart().getTime();
+        for (int i = 0; i < p.getMeasurement().getMeasurement().size(); i++) {
+            MeasurePoint point = p.getMeasurement().getMeasurement().get(i);
+            double time = point.getDate().getTime() - start;
+//            System.out.println("time: " + time);
+//            System.out.println("last: " + (timeseries.size() > 0 ? timeseries.getTimeAtNthPoint(timeseries.size() -1) : 0.0));
+//            System.out.println("---");
+            if(timeseries.size() > 0 && time <= timeseries.getTimeAtNthPoint(timeseries.size() -1)){
+                System.out.println("bla");
+                continue;
 
-	public DTWMatch recognizeByAccelerometer(Punch p) {
-		return _recognize(punchToAccTimeSeries(p), accTemplate);
-	}
+            }
+            try {
+                timeseries.addLast(time, new TimeSeriesPoint(new double[] { point.getAx(), point.getAy(), point.getAz(), point.getGx(), point.getGy(), point.getGz() }));
+            } catch (Exception e) {
+            }
+        }
+        return timeseries;
+    }
 
-	public DTWMatch recognizeByAccGYrCombined(Punch p) {
-		return _recognize(punchToAccGYrCombinedTimeSeries(p),
-				accGyrCombinedTemplate);
-	}
+    private TimeSeries punchToAccTimeSeries(Punch p) {
+        TimeSeries timeseries = new TimeSeries(3);
+        long start = p.getMeasurement().getStart().getTime();
+        for (int i = 0; i < p.getMeasurement().getMeasurement().size(); i++) {
+            MeasurePoint point = p.getMeasurement().getMeasurement().get(i);
+            double time = point.getDate().getTime() - start;
+//            System.out.println("time: " + time);
+//            System.out.println("last: " + (timeseries.size() > 0 ? timeseries.getTimeAtNthPoint(timeseries.size() -1) : 0.0));
+//            System.out.println("---");
+            if(timeseries.size() > 0 && time <= timeseries.getTimeAtNthPoint(timeseries.size() -1)){
+                System.out.println("bla");
+                continue;
 
-	public DTWMatch recognizeByGyroskop(Punch p) {
-		return _recognize(punchToGyrTimeSeries(p), gyrTemplate);
-	}
+            }
+            try {
+                timeseries.addLast(time, new TimeSeriesPoint(new double[] { point.getAx(), point.getAy(), point.getAz() }));
+            } catch (Exception e) {
+               
+            }
 
-	public DTWMatch recognizeByTrajectory(Punch p) {
-		return _recognize(punchToTrajTimeSeries(p), trajTemplate);
-	}
+        }
+        return timeseries;
+    }
+
+    private TimeSeries punchToGyrTimeSeries(Punch p) {
+        TimeSeries timeseries = new TimeSeries(3);
+        long start = p.getMeasurement().getStart().getTime();
+        for (int i = 0; i < p.getMeasurement().getMeasurement().size(); i++) {
+            MeasurePoint point = p.getMeasurement().getMeasurement().get(i);
+            double time = point.getDate().getTime() - start;
+//            System.out.println("time: " + time);
+//            System.out.println("last: " + (timeseries.size() > 0 ? timeseries.getTimeAtNthPoint(timeseries.size() -1) : 0.0));
+//            System.out.println("---");
+            if(timeseries.size() > 0 && time <= timeseries.getTimeAtNthPoint(timeseries.size() -1)){
+                System.out.println("bla");
+                continue;
+
+            }
+            try {
+                timeseries.addLast(time, new TimeSeriesPoint(new double[] { point.getGx(), point.getGy(), point.getGz() }));
+            } catch (Exception e) {
+            }
+        }
+        return timeseries;
+    }
+
+    private MeasurementTo3dTrajectory m3dtr = new MeasurementTo3dTrajectory();
+
+    private TimeSeries punchToTrajTimeSeries(Punch p) {
+        List<MeasurePoint> measurepPoints = p.getMeasurement().getMeasurement();
+        List<Point3D> trajectory = m3dtr.transform(p.getMeasurement());
+        TimeSeries timeseries = new TimeSeries(3);
+        long start = p.getMeasurement().getStart().getTime();
+        for (int i = 0; i < measurepPoints.size(); i++) {
+            MeasurePoint point = measurepPoints.get(i);
+            Point3D point3D = trajectory.get(i);
+            double time = point.getDate().getTime() - start;
+//            System.out.println("time: " + time);
+//            System.out.println("last: " + (timeseries.size() > 0 ? timeseries.getTimeAtNthPoint(timeseries.size() -1) : 0.0));
+//            System.out.println("---");
+            if(timeseries.size() > 0 && time <= timeseries.getTimeAtNthPoint(timeseries.size() -1)){
+                System.out.println("bla");
+                continue;
+
+            }
+            try {
+                timeseries.addLast(time, new TimeSeriesPoint(new double[] { point3D.x, point3D.y, point3D.z }));
+            } catch (Exception e) {
+            }
+        }
+        return timeseries;
+    }
+
+    public DTWMatch recognizeByAccelerometer(Punch p) {
+        return _recognize(punchToAccTimeSeries(p), accTemplate);
+    }
+
+    public DTWMatch recognizeByAccGYrCombined(Punch p) {
+        return _recognize(punchToAccGYrCombinedTimeSeries(p), accGyrCombinedTemplate);
+    }
+
+    public DTWMatch recognizeByGyroskop(Punch p) {
+        return _recognize(punchToGyrTimeSeries(p), gyrTemplate);
+    }
+
+    public DTWMatch recognizeByTrajectory(Punch p) {
+        return _recognize(punchToTrajTimeSeries(p), trajTemplate);
+    }
 
 }

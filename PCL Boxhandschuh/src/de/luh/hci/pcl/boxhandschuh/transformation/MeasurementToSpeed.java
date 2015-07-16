@@ -23,10 +23,10 @@ public class MeasurementToSpeed implements MeasurementToTrace {
             lastTimeStamp = currentTimeStamp;
             Point3D acceleration = new Point3D(current.getAx() * MeasurementTo3dTrajectory.factor, current.getAy() * MeasurementTo3dTrajectory.factor, current.getAz() * MeasurementTo3dTrajectory.factor);
             
-            velocity.x = velocity.x * acceleration.x * dt;
-            velocity.y = velocity.y * acceleration.y * dt;
-            velocity.z = velocity.z * acceleration.z * dt;
-            
+            velocity.x = velocity.x + Math.abs(acceleration.x) * dt;
+            velocity.y = velocity.y + Math.abs(acceleration.y) * dt;
+            velocity.z = velocity.z + Math.abs(acceleration.z) * dt;
+           
             speedTrace.add(velocity.copy());
         }
         
